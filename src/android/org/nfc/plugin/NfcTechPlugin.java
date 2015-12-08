@@ -1,5 +1,18 @@
 package org.nfc.plugin;
 
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+// using wildcard imports so we can support Cordova 3.x
+import org.apache.cordova.*; // Cordova 3.x
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -7,9 +20,6 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
@@ -23,7 +33,7 @@ public class NfcTechPlugin extends CordovaPlugin {
         return false;
     }
     private boolean readNfc(final CallbackContext callbackContext){
-        cordova.getThreadPool().execute(new Runnable() {
+        this.cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
                 mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
