@@ -1,8 +1,15 @@
 package org.nfc.plugin;
 
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
@@ -11,10 +18,11 @@ public class NfcTechPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
         if("readNfc".equals("action")){
-            readNfc(callbackContext);
+            return readNfc(callbackContext);
         }
+        return false;
     }
-    private void readNfc(CallbackContext callbackContext){
+    private boolean readNfc(CallbackContext callbackContext){
         cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
@@ -30,11 +38,12 @@ public class NfcTechPlugin extends CordovaPlugin {
                     callbackContext.error("NFC is disabled");
                     return true;
                 }
-                handleIntent(getIntent(), callbackContext);
+                return handleIntent(getIntent(), callbackContext);
             }
-        }
+        });
+        return false;
     }
-    private void handleIntent(Intent intent) {
+    private boolean handleIntent(Intent intent) {
         setupForegroundDispatch(this, mNfcAdapter);
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
