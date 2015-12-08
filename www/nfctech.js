@@ -1,6 +1,5 @@
 var nfctech = {
-	addNdefListener: function (callback, win, fail) {
-        document.addEventListener("nfctech", callback, false);
+	addTechListener: function (win, fail) {
         cordova.exec(win, fail, "NfcPlugin", "registerNdef", []);
     }
 	/*createEvent: function(successCallback, errorCallback){
