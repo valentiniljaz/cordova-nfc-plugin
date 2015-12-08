@@ -13,7 +13,7 @@ import org.json.JSONException;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
-    private  NfcAdapter mNfcAdapter;
+    private NfcAdapter mNfcAdapter;
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
@@ -22,7 +22,7 @@ public class NfcTechPlugin extends CordovaPlugin {
         }
         return false;
     }
-    private boolean readNfc(CallbackContext callbackContext){
+    private boolean readNfc(final CallbackContext callbackContext){
         cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
@@ -43,14 +43,14 @@ public class NfcTechPlugin extends CordovaPlugin {
         });
         return false;
     }
-    private boolean handleIntent(Intent intent) {
-        setupForegroundDispatch(this, mNfcAdapter);
+    private boolean handleIntent(Intent intent, final CallbackContext callbackContext) {
+        setupForegroundDispatch(getActivity(), mNfcAdapter);
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             byte[] id = mTag.getId();
             callbackContext.success(bytesToHex(id));
-            stopForegroundDispatch(this, mNfcAdapter);
+            stopForegroundDispatch(getActivity(), mNfcAdapter);
             return true;
         }
     }
@@ -89,5 +89,12 @@ public class NfcTechPlugin extends CordovaPlugin {
             hexChars[j*2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+    private Activity getActivity() {
+        return this.cordova.getActivity();
+    }
+
+    private Intent getIntent() {
+        return getActivity().getIntent();
     }
 }
