@@ -35,6 +35,7 @@ public class NfcTechPlugin extends CordovaPlugin {
     private boolean readNfc(final CallbackContext callbackContext){
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		setupForegroundDispatch(getActivity(), mNfcAdapter);
+		webView.loadUrl("javascript:console.log('1');");
 		if (mNfcAdapter == null) {
 			// Stop here, we definitely need NFC
 			callbackContext.error("This device doesn't support NFC");
@@ -42,17 +43,15 @@ public class NfcTechPlugin extends CordovaPlugin {
 		if (!mNfcAdapter.isEnabled()) {
 			callbackContext.error("NFC is disabled!");
 		}
-		//handleIntent(getIntent(), callbackContext);
-		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
-			Tag mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			byte[] id = mTag.getId();
-			callbackContext.success(bytesToHex(id));
-		}
+		webView.loadUrl("javascript:console.log('3');");
+		handleIntent(getIntent(), callbackContext);
         return true;
     }
     private void handleIntent(Intent intent, final CallbackContext callbackContext) {
+		webView.loadUrl("javascript:console.log('4');");
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+			webView.loadUrl("javascript:console.log('5');");
             Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             byte[] id = mTag.getId();
             callbackContext.success(bytesToHex(id));
