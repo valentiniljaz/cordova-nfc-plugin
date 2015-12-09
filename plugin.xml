@@ -9,7 +9,7 @@
     <keywords>nfc, NfcV</keywords>
  
     <js-module src="www/nfctech.js" name="NfcTech">
-        <clobbers target="window.nfctech" />
+        <clobbers target="NfcTech" />
     </js-module>
  
     <!-- android -->

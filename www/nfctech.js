@@ -1,4 +1,4 @@
-var nfctech = {
+var NfcTech = {
 	addTechListener: function (win, fail) {
         cordova.exec(win, fail, "NfcPlugin", "registerNdef", []);
     }
@@ -12,4 +12,4 @@ var nfctech = {
 		);
 	}*/
 }
-module.exports = nfctech;
+module.exports = NfcTech;
