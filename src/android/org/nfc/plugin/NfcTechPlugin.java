@@ -42,14 +42,13 @@ public class NfcTechPlugin extends CordovaPlugin {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-				webView.loadUrl("javascript:alert('thread')");
+				webView.loadUrl("javascript:console.log('thread')");
                 if (!mNfcAdapter.isEnabled()) {
                     callbackContext.error("NFC is disabled");
                 }
                 handleIntent(getIntent(), callbackContext);
             }
         });
-        stopForegroundDispatch(getActivity(), mNfcAdapter);
         return true;
     }
     private void handleIntent(Intent intent, final CallbackContext callbackContext) {
