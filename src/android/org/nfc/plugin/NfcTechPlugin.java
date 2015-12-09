@@ -23,7 +23,6 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
-import android.widget.Toast;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
@@ -60,7 +59,6 @@ public class NfcTechPlugin extends CordovaPlugin {
     private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            Toast.makeText(this, "NFC tag found", Toast.LENGTH_LONG).show();
             Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             byte[] id = mTag.getId();
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
