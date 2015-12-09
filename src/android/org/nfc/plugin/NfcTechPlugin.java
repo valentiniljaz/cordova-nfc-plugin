@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaInterface;
+import org.apache.dordova.PluginResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +26,10 @@ import android.nfc.Tag;
 public class NfcTechPlugin extends CordovaPlugin {
 
     private NfcAdapter mNfcAdapter;
+	
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		super.initialize(cordova, webView);
+	}
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
