@@ -30,6 +30,8 @@ public class NfcTechPlugin extends CordovaPlugin {
 	
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 		super.initialize(cordova, webView);
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		setupForegroundDispatch(getActivity(), mNfcAdapter);
 	}
 
     @Override
@@ -40,8 +42,6 @@ public class NfcTechPlugin extends CordovaPlugin {
         return false;
     }
     private boolean readNfc(final CallbackContext callbackContext){
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		setupForegroundDispatch(getActivity(), mNfcAdapter);
 		getActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				webView.loadUrl("javascript:console.log('1');");
