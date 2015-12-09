@@ -24,6 +24,7 @@ import android.nfc.Tag;
 public class NfcTechPlugin extends CordovaPlugin {
 
     private NfcAdapter mNfcAdapter;
+	private boolean found = false;
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
@@ -42,11 +43,13 @@ public class NfcTechPlugin extends CordovaPlugin {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-				webView.loadUrl("javascript:console.log('thread')");
-                if (!mNfcAdapter.isEnabled()) {
-                    callbackContext.error("NFC is disabled");
-                }
-                handleIntent(getIntent(), callbackContext);
+				while(!found){
+					webView.loadUrl("javascript:console.log('thread')");
+					if (!mNfcAdapter.isEnabled()) {
+						callbackContext.error("NFC is disabled");
+					}
+					handleIntent(getIntent(), callbackContext);
+				}
             }
         });
         return true;
@@ -57,6 +60,7 @@ public class NfcTechPlugin extends CordovaPlugin {
             Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             byte[] id = mTag.getId();
             callbackContext.success(bytesToHex(id));
+			this.found = true;
         }
     }
 
