@@ -33,17 +33,28 @@ public class NfcTechPlugin extends CordovaPlugin {
         return false;
     }
     private boolean readNfc(final CallbackContext callbackContext){
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-        if (mNfcAdapter == null) {
-            // Stop here, we definitely need NFC
-            callbackContext.error("This device doesn't support NFC");
-        }
-        setupForegroundDispatch(getActivity(), mNfcAdapter);
-		webView.loadUrl("javascript:console.log('thread')");
-		if (!mNfcAdapter.isEnabled()) {
-			callbackContext.error("NFC is disabled!");
-		}
-		handleIntent(getIntent(), callbackContext);
+        this.cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+				mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+				if (mNfcAdapter == null) {
+					// Stop here, we definitely need NFC
+					callbackContext.error("This device doesn't support NFC");
+				}
+				setupForegroundDispatch(getActivity(), mNfcAdapter);
+                webView.loadUrl("javascript:console.log('thread')");
+                if (!mNfcAdapter.isEnabled()) {
+                    callbackContext.error("NFC is disabled!");
+                }
+                //handleIntent(getIntent(), callbackContext);
+				String action = intent.getAction();
+				if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
+					Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+					byte[] id = mTag.getId();
+					callbackContext.success(bytesToHex(id));
+				}
+            }
+        });
         return true;
     }
     private void handleIntent(Intent intent, final CallbackContext callbackContext) {
