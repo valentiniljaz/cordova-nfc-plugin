@@ -25,7 +25,13 @@ public class NfcTechPlugin extends CordovaPlugin {
 
     private NfcAdapter mNfcAdapter;
 	private boolean found = false;
-
+	
+	@Override
+	public void initialize(CordovaInterface cordova, CordovaWebView webview){
+		super.initialize(cordova, webView);
+        setupForegroundDispatch(getActivity(), mNfcAdapter);
+	}
+	
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
 		if("readNfcTech".equals(action)){
@@ -39,19 +45,11 @@ public class NfcTechPlugin extends CordovaPlugin {
 			// Stop here, we definitely need NFC
             callbackContext.error("This device doesn't support NFC");
         }
-        setupForegroundDispatch(getActivity(), mNfcAdapter);
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-				while(!found){
-					webView.loadUrl("javascript:console.log('thread')");
-					if (!mNfcAdapter.isEnabled()) {
-						callbackContext.error("NFC is disabled");
-					}
-					handleIntent(getIntent(), callbackContext);
-				}
-            }
-        });
+		webView.loadUrl("javascript:console.log('hi')");
+		if (!mNfcAdapter.isEnabled()) {
+			callbackContext.error("NFC is disabled");
+		}
+		handleIntent(getIntent(), callbackContext);
         return true;
     }
     private void handleIntent(Intent intent, final CallbackContext callbackContext) {
