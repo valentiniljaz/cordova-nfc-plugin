@@ -47,7 +47,6 @@ public class NfcTechPlugin extends CordovaPlugin {
                     callbackContext.error("NFC is disabled!");
                 }
                 //handleIntent(getIntent(), callbackContext);
-				String action = intent.getAction();
 				if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
 					webView.loadUrl("javascript:console.log('nfc detected')");
 					Tag mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
