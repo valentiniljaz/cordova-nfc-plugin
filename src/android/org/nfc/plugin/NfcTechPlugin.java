@@ -28,16 +28,16 @@ public class NfcTechPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
         if("readNfcTech".equals(action)){
-			setupForegroundDispatch(getActivity(), mNfcAdapter);
             return readNfc(callbackContext);
         }
         return false;
     }
     private boolean readNfc(final CallbackContext callbackContext){
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		setupForegroundDispatch(getActivity(), mNfcAdapter);
         this.cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
-				mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 				if (mNfcAdapter == null) {
 					// Stop here, we definitely need NFC
 					callbackContext.error("This device doesn't support NFC");
