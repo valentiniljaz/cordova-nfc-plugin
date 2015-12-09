@@ -27,21 +27,23 @@ import android.nfc.Tag;
 public class NfcTechPlugin extends CordovaPlugin {
 
     private NfcAdapter mNfcAdapter;
+	private CallbackContext callbackContext;
 	
-	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-		super.initialize(cordova, webView);
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		setupForegroundDispatch(getActivity(), mNfcAdapter);
-	}
-
+	@Override
+    public void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
-        if("readNfcTech".equals(action)){
+        this.callbackContext = callbackContext;
+		if("readNfcTech".equals(action)){
             return readNfc(callbackContext);
         }
         return false;
     }
     private boolean readNfc(final CallbackContext callbackContext){
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		setupForegroundDispatch(getActivity(), mNfcAdapter);
 		getActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				webView.loadUrl("javascript:console.log('1');");
@@ -53,19 +55,20 @@ public class NfcTechPlugin extends CordovaPlugin {
 					callbackContext.error("NFC is disabled!");
 				}
 				webView.loadUrl("javascript:console.log('3');");
-				handleIntent(getIntent(), callbackContext);
+				handleIntent(getIntent());
 			}
         });
         return true;
     }
-    private void handleIntent(Intent intent, final CallbackContext callbackContext) {
-		webView.loadUrl("javascript:console.log('4');");
+    private void handleIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-			webView.loadUrl("javascript:console.log('5');");
             Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             byte[] id = mTag.getId();
             callbackContext.success(bytesToHex(id));
+			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
+			pluginResult.setKeepCallback(true);
+			callbackContext.sendPluginResult(pluginResult);
         }
     }
 
