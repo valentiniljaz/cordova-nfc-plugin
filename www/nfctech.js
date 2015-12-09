@@ -1,6 +1,6 @@
 var NfcTech = {
 	addTechListener: function (win, fail) {
-        cordova.exec(win, fail, "NfcTech", "readNfc", []);
+        cordova.exec(win, fail, "NfcTechPlugin", "readNfcTech", []);
     }
 	/*createEvent: function(successCallback, errorCallback){
 		cordova.exec(

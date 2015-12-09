@@ -27,7 +27,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
-        if("readNfc".equals(action)){
+        if("readNfcTech".equals(action)){
             return readNfc(callbackContext);
         }
         return false;
