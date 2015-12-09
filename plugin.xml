@@ -3,7 +3,7 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="org.nfc.plugin.NfcTechPlugin"
       version="0.1.0">
-    <name>NfcTech</name>
+    <name>NfcTechPlugin</name>
     <description>PhoneGap NfcTech Plugin</description>
     <license>MIT</license>
     <keywords>nfc, NfcV</keywords>
@@ -15,7 +15,7 @@
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="NfcTech">
+            <feature name="NfcTechPlugin">
                 <param name="android-package" value="org.nfc.plugin.NfcTechPlugin"/>
 				<param name="onload" value="true" />
             </feature>
