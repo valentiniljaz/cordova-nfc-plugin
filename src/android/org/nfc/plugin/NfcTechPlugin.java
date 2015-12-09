@@ -50,7 +50,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 				String action = intent.getAction();
 				if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
 					webView.loadUrl("javascript:console.log('nfc detected')");
-					Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+					Tag mTag = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
 					byte[] id = mTag.getId();
 					callbackContext.success(bytesToHex(id));
 				}
