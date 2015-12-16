@@ -24,6 +24,8 @@ import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
 
+import android.widget.Toast;
+
 public class NfcTechPlugin extends CordovaPlugin {
 
     private NfcAdapter mNfcAdapter;
@@ -42,9 +44,13 @@ public class NfcTechPlugin extends CordovaPlugin {
 		setupForegroundDispatch(getActivity(), mNfcAdapter);
 		if (mNfcAdapter == null) {
 			// Stop here, we definitely need NFC
+			Toast.makeText(getActivity().getApplicationContext(),
+                    "This device doesn't support NFC", Toast.LENGTH_SHORT).show();
 			callbackContext.error("This device doesn't support NFC");
 		}
 		if (!mNfcAdapter.isEnabled()) {
+			Toast.makeText(getActivity().getApplicationContext(),
+                    "NFC is disabled!", Toast.LENGTH_SHORT).show();
 			callbackContext.error("NFC is disabled!");
 		}
 		handleIntent(getIntent());
