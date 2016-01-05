@@ -41,16 +41,15 @@ public class NfcTechPlugin extends CordovaPlugin {
     }
     private boolean readNfc(final CallbackContext callbackContext){
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		// Redirect NFC Intent to the EQX App
 		setupForegroundDispatch(getActivity(), mNfcAdapter);
+		// Check if the device supports NFC
 		if (mNfcAdapter == null) {
 			// Stop here, we definitely need NFC
-			Toast.makeText(getActivity().getApplicationContext(),
-                    "This device doesn't support NFC", Toast.LENGTH_SHORT).show();
 			callbackContext.error("This device doesn't support NFC");
 		}
+		// Check if NFC is enabled
 		if (!mNfcAdapter.isEnabled()) {
-			Toast.makeText(getActivity().getApplicationContext(),
-                    "NFC is disabled!", Toast.LENGTH_SHORT).show();
 			callbackContext.error("NFC is disabled!");
 		}
 		handleIntent(getIntent());
@@ -70,6 +69,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 			pluginResult.setKeepCallback(true);
 			callbackContext.sendPluginResult(pluginResult);
+			setupForegroundDispatch(getActivity(), mNfcAdapter);
         }
     }
 
