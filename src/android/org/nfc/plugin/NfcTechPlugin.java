@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
-    private NfcAdapter mNfcAdapter;
+    private NfcAdapter nfcAdapter;
 	private CallbackContext callbackContext;
 	
     @Override
@@ -37,22 +37,34 @@ public class NfcTechPlugin extends CordovaPlugin {
 		if("readNfcTech".equals(action)){
             return readNfc(callbackContext);
         }
+		if("checkNfc".equals(action)){
+			return checkNfc(callbackContext);
+		}
         return false;
     }
+	private boolean nfcIsAvailable(NfcAdapter nfcAdapter){
+		if (nfcAdapter == null || !nfcAdapter.isEnabled()) {
+			return false;
+		}
+		return true;
+	}
+	private boolean checkNfc(final CallbackContext callbackContext){
+		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		if (nfcIsAvailable(nfcAdapter)) {
+			callbackContext.sucess("NFC available!");
+		}else{
+			Toast.makeText(getActivity().getApplicationContext(),
+                    "This device doesn't support NFC or NFC is disabled!", Toast.LENGTH_SHORT).show();
+			callbackContext.error("This device doesn't support NFC or NFC is disabled!");
+		}
+        return true;
+	}
     private boolean readNfc(final CallbackContext callbackContext){
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		// Redirect NFC Intent to the EQX App
-		setupForegroundDispatch(getActivity(), mNfcAdapter);
-		// Check if the device supports NFC
-		if (mNfcAdapter == null) {
-			// Stop here, we definitely need NFC
-			callbackContext.error("This device doesn't support NFC");
+		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		if(nfcIsAvailable(nfcAdapter)){
+			setupForegroundDispatch(getActivity(), nfcAdapter);	
+			handleIntent(getIntent());
 		}
-		// Check if NFC is enabled
-		if (!mNfcAdapter.isEnabled()) {
-			callbackContext.error("NFC is disabled!");
-		}
-		handleIntent(getIntent());
         return true;
     }
 	
@@ -69,7 +81,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 			pluginResult.setKeepCallback(true);
 			callbackContext.sendPluginResult(pluginResult);
-			setupForegroundDispatch(getActivity(), mNfcAdapter);
+			stopForegroundDispatch(getActivity(), nfcAdapter);
         }
     }
 
