@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 public class NfcTechPlugin extends CordovaPlugin {
 
-    private NfcAdapter mNfcAdapter;
+    private NfcAdapter nfcAdapter;
 	private CallbackContext callbackContext;
 	
     @Override
@@ -37,23 +37,34 @@ public class NfcTechPlugin extends CordovaPlugin {
 		if("readNfcTech".equals(action)){
             return readNfc(callbackContext);
         }
+		if("checkNfc".equals(action)){
+			return checkNfc(callbackContext);
+		}
         return false;
     }
+	private boolean nfcIsAvailable(NfcAdapter nfcAdapter){
+		if (nfcAdapter == null || !nfcAdapter.isEnabled()) {
+			return false;
+		}
+		return true;
+	}
+	private boolean checkNfc(final CallbackContext callbackContext){
+		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		if (nfcIsAvailable(nfcAdapter)) {
+			callbackContext.sucess("NFC available!");
+		}else{
+			Toast.makeText(getActivity().getApplicationContext(),
+                    "This device doesn't support NFC or NFC is disabled!", Toast.LENGTH_SHORT).show();
+			callbackContext.error("This device doesn't support NFC or NFC is disabled!");
+		}
+        return true;
+	}
     private boolean readNfc(final CallbackContext callbackContext){
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		setupForegroundDispatch(getActivity(), mNfcAdapter);
-		if (mNfcAdapter == null) {
-			// Stop here, we definitely need NFC
-			Toast.makeText(getActivity().getApplicationContext(),
-                    "This device doesn't support NFC", Toast.LENGTH_SHORT).show();
-			callbackContext.error("This device doesn't support NFC");
+		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		if(nfcIsAvailable(nfcAdapter)){
+			setupForegroundDispatch(getActivity(), nfcAdapter);	
+			handleIntent(getIntent());
 		}
-		if (!mNfcAdapter.isEnabled()) {
-			Toast.makeText(getActivity().getApplicationContext(),
-                    "NFC is disabled!", Toast.LENGTH_SHORT).show();
-			callbackContext.error("NFC is disabled!");
-		}
-		handleIntent(getIntent());
         return true;
     }
 	
