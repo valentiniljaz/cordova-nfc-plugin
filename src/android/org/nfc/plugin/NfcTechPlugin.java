@@ -51,7 +51,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 	private boolean checkNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcIsAvailable(nfcAdapter)) {
-			callbackContext.sucess("NFC available!");
+			callbackContext.success("NFC available!");
 		}else{
 			Toast.makeText(getActivity().getApplicationContext(),
                     "This device doesn't support NFC or NFC is disabled!", Toast.LENGTH_SHORT).show();
