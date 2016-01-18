@@ -35,7 +35,6 @@ public class NfcTechPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
 		if("readNfcTech".equals(action)){
-            //webView.loadUrl("javascript:console.log('readNfcTech');");
             return readNfc(callbackContext);
         }
 		if("checkNfc".equals(action)){
@@ -62,9 +61,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 	}
     private boolean readNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-//        webView.loadUrl("javascript:console.log('adapter');");
 		if(nfcAvailable(nfcAdapter)){
-//            webView.loadUrl("javascript:console.log('available');");
 			setupForegroundDispatch(getActivity(), nfcAdapter);	
 			handleIntent(getIntent());
 		}
