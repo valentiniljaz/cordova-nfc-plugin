@@ -35,6 +35,7 @@ public class NfcTechPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
 		if("readNfcTech".equals(action)){
+            webView.loadUrl("javascript:console.log('readNfcTech');");
             return readNfc(callbackContext);
         }
 		if("checkNfc".equals(action)){
@@ -42,7 +43,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 		}
         return false;
     }
-	private boolean nfcIsAvailable(NfcAdapter nfcAdapter){
+	private boolean nfcAvailable(NfcAdapter nfcAdapter){
 		if (nfcAdapter == null || !nfcAdapter.isEnabled()) {
 			return false;
 		}
@@ -50,7 +51,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 	}
 	private boolean checkNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if (nfcIsAvailable(nfcAdapter)) {
+		if (nfcAvailable(nfcAdapter)) {
 			callbackContext.success("NFC available!");
 		}else{
 			Toast.makeText(getActivity().getApplicationContext(),
@@ -61,7 +62,9 @@ public class NfcTechPlugin extends CordovaPlugin {
 	}
     private boolean readNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if(nfcIsAvailable(nfcAdapter)){
+        webView.loadUrl("javascript:console.log('adapter');");
+		if(nfcAvailable(nfcAdapter)){
+            webView.loadUrl("javascript:console.log('available');");
 			setupForegroundDispatch(getActivity(), nfcAdapter);	
 			handleIntent(getIntent());
 		}
@@ -81,7 +84,6 @@ public class NfcTechPlugin extends CordovaPlugin {
 			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 			pluginResult.setKeepCallback(true);
 			callbackContext.sendPluginResult(pluginResult);
-			stopForegroundDispatch(getActivity(), nfcAdapter);
         }
     }
 
