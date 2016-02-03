@@ -57,7 +57,7 @@ public class NfcTechPlugin extends CordovaPlugin {
 	}
     private boolean readNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if(nfcAdapter == null || !nfcAdapter.isEnabled()){
+		if(nfcAdapter != null && nfcAdapter.isEnabled()){
 			setupForegroundDispatch(getActivity(), nfcAdapter);	
 			handleIntent(getIntent());
 		}
