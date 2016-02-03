@@ -42,26 +42,22 @@ public class NfcTechPlugin extends CordovaPlugin {
 		}
         return false;
     }
-	private boolean nfcAvailable(NfcAdapter nfcAdapter){
-		if (nfcAdapter == null || !nfcAdapter.isEnabled()) {
-			return false;
-		}
-		return true;
-	}
 	private boolean checkNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if (nfcAvailable(nfcAdapter)) {
-			callbackContext.success("NFC available!");
+		if (nfcAdapter == null) {
+			callbackContext.error("This device doesn't support NFC!");
 		}else{
-			Toast.makeText(getActivity().getApplicationContext(),
-                    "This device doesn't support NFC or NFC is disabled!", Toast.LENGTH_SHORT).show();
-			callbackContext.error("This device doesn't support NFC or NFC is disabled!");
+			if (!nfcAdapter.isEnabled()){
+				callbackContext.error("NFC is disabled!");
+			}else{
+				callbackContext.success("NFC available!");
+			}
 		}
         return true;
 	}
     private boolean readNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if(nfcAvailable(nfcAdapter)){
+		if(nfcAdapter == null || !nfcAdapter.isEnabled()){
 			setupForegroundDispatch(getActivity(), nfcAdapter);	
 			handleIntent(getIntent());
 		}
