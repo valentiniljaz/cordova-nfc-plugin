@@ -22,5 +22,6 @@
         </config-file>
  
         <source-file src="src/android/org/nfc/plugin/NfcTechPlugin.java" target-dir="src/org/nfc/plugin" />      
+		<source-file src="src/android/org/nfc/plugin/NfcHandler.java" target-dir="src/org/nfc/plugin" />   
      </platform>          
 </plugin>
