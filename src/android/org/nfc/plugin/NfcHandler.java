@@ -47,6 +47,7 @@ public class NfcHandler {
     }
     public boolean stopReadingNfc(){
         this.isListening = false;
+        callbackContext.success("Stopped");
         return true;
     }
 
