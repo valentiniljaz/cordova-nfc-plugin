@@ -47,10 +47,10 @@ public class NfcHandler {
     public void newIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-			handleNfcInent(intent);
+            handleNfcIntent(intent);
         }
     }
-	private void handleIntent(Intent intent) {
+	private void handleNfcIntent(Intent intent) {
 		Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		byte[] id = mTag.getId();
 		
