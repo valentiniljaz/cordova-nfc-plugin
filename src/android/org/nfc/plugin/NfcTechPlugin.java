@@ -16,21 +16,18 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.NfcAdapter;
-import android.nfc.tech.NfcV;
-import android.nfc.Tag;
 
 public class NfcTechPlugin extends CordovaPlugin {
 	
 	private NfcHandler handler;
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
-		handler = new NfcHandler();
+		handler = new NfcHandler(return this.cordova.getActivity(), callbackContext);
 		if("readNfcTech".equals(action)){
-            return handler.startReadingNfc(callbackContext);
+            return handler.startReadingNfc();
         }
 		if("checkNfc".equals(action)){
-			return handler.checkNfcAvailibility(callbackContext);
+			return handler.checkNfcAvailibility();
 		}
         return false;
     }

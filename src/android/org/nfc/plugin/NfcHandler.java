@@ -10,13 +10,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
+import android.nfc.Tag;
 
 public class NfcHandler {
 	
     private NfcAdapter nfcAdapter;
+    private Activity activity;
 	private CallbackContext callbackContext;
 
-    public boolean checkNfcAvailibility(final CallbackContext callbackContext){
+    public NfcHandler(Activity activity, final CallbackContext callbackContext){
+        this.activity = activity;
+        this.callbackContext = callbackContext;
+    }
+
+    public boolean checkNfcAvailibility(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error("This device doesn't support NFC!");
@@ -29,7 +36,7 @@ public class NfcHandler {
 		}
         return true;
 	}
-    public boolean startReadingNfc(final CallbackContext callbackContext){
+    public boolean startReadingNfc(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if(nfcAdapter != null && nfcAdapter.isEnabled()){
 			setupForegroundDispatch(getActivity(), nfcAdapter);
@@ -84,11 +91,9 @@ public class NfcHandler {
         }
         return new String(hexChars);
     }
-    private Activity getActivity() {
-        return this.cordova.getActivity();
-    }
+    private Activity getActivity() { return this.activity; }
 
     private Intent getIntent() {
-        return getActivity().getIntent();
+        return this.activity.getIntent();
     }
 }
