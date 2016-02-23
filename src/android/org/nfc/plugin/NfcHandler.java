@@ -1,20 +1,8 @@
 package org.nfc.plugin;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.*;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -23,8 +11,8 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 
-public class NfcTechPlugin extends CordovaPlugin {
-
+public class NfcHandler {
+	
     private NfcAdapter nfcAdapter;
 	private CallbackContext callbackContext;
 	
@@ -48,13 +36,8 @@ public class NfcTechPlugin extends CordovaPlugin {
 		}
         return true;
     }
-	
-	@Override
-    public void onNewIntent(Intent intent) {
-		handleIntent(intent);
-    }
 
-    private void handleIntent(Intent intent) {
+    private void newIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 			handleNfcInent(intent);
