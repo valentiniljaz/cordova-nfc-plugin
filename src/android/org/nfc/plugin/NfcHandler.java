@@ -45,6 +45,10 @@ public class NfcHandler {
 		}
         return true;
     }
+    public boolean stopReadingNfc(){
+        this.isListening = false;
+        return true;
+    }
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
