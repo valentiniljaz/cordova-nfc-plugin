@@ -15,8 +15,8 @@ public class NfcHandler {
 	
     private NfcAdapter nfcAdapter;
 	private CallbackContext callbackContext;
-	
-	private boolean checkNfcAvailibility(final CallbackContext callbackContext){
+
+    public boolean checkNfcAvailibility(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error("This device doesn't support NFC!");
@@ -29,7 +29,7 @@ public class NfcHandler {
 		}
         return true;
 	}
-    private boolean startReadingNfc(final CallbackContext callbackContext){
+    public boolean startReadingNfc(final CallbackContext callbackContext){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if(nfcAdapter != null && nfcAdapter.isEnabled()){
 			setupForegroundDispatch(getActivity(), nfcAdapter);
@@ -37,7 +37,7 @@ public class NfcHandler {
         return true;
     }
 
-    private void newIntent(Intent intent) {
+    public void newIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 			handleNfcInent(intent);
