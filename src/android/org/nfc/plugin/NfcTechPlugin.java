@@ -15,9 +15,10 @@ import android.nfc.Tag;
 
 public class NfcTechPlugin extends CordovaPlugin {
 	
+	private NfcHandler handler;
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
-		NfcHandler handler = new NfcHandler();
+		handler = new NfcHandler();
 		if("readNfcTech".equals(action)){
             return handler.startReadingNfc(callbackContext);
         }
