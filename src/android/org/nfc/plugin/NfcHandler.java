@@ -47,6 +47,7 @@ public class NfcHandler {
     }
     public boolean stopReadingNfc(){
         this.isListening = false;
+        stopForegroundDispatch(getActivity(), nfcAdapter);
         callbackContext.success("Stopped");
         return true;
     }
