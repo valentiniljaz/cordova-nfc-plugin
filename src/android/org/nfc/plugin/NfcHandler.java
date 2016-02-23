@@ -17,6 +17,7 @@ public class NfcHandler {
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
+    private boolean isListening;
 
     public NfcHandler(Activity activity, final CallbackContext callbackContext){
         this.activity = activity;
@@ -39,6 +40,7 @@ public class NfcHandler {
     public boolean startReadingNfc(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if(nfcAdapter != null && nfcAdapter.isEnabled()){
+            this.isListening = true;
 			setupForegroundDispatch(getActivity(), nfcAdapter);
 		}
         return true;
@@ -46,7 +48,7 @@ public class NfcHandler {
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             handleNfcIntent(intent);
         }
     }
@@ -57,8 +59,9 @@ public class NfcHandler {
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 		pluginResult.setKeepCallback(true);
 		callbackContext.sendPluginResult(pluginResult);
-		
-		stopForegroundDispatch(getActivity(), nfcAdapter);
+
+        this.isListening = false;
+		//stopForegroundDispatch(getActivity(), nfcAdapter);
 	}
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
