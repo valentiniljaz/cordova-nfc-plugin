@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-           id="org.nfc.plugin.NfcTechPlugin"
+           id="nfc.plugin.NfcTechPlugin"
       version="0.1.0">
     <name>NfcTechPlugin</name>
     <description>Cordova NfcTech Plugin</description>
@@ -16,12 +16,12 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="NfcTechPlugin">
-                <param name="android-package" value="org.nfc.plugin.NfcTechPlugin"/>
+                <param name="android-package" value="nfc.plugin.NfcTechPlugin"/>
 				<param name="onload" value="true" />
             </feature>
         </config-file>
  
-        <source-file src="src/android/org/nfc/plugin/NfcTechPlugin.java" target-dir="src/org/nfc/plugin" />      
-		<source-file src="src/android/org/nfc/plugin/NfcHandler.java" target-dir="src/org/nfc/plugin" />   
+        <source-file src="src/android/NfcTechPlugin.java" target-dir="src/plugin" />      
+		<source-file src="src/android/NfcHandler.java" target-dir="src/plugin" />   
      </platform>          
 </plugin>

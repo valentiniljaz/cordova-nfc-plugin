@@ -1,4 +1,4 @@
-package org.nfc.plugin;
+package nfc.plugin;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.nfc.plugin.NfcHandler;
+import nfc.plugin.NfcHandler;
 
 import android.app.Activity;
 import android.app.PendingIntent;

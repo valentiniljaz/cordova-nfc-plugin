@@ -1,4 +1,4 @@
-package org.nfc.plugin;
+package nfc.plugin;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
