@@ -13,7 +13,11 @@ import android.nfc.tech.NfcV;
 import android.nfc.Tag;
 
 public class NfcHandler {
-	
+    private static final String STATUS_NFC_OK = "NFC_OK";
+    private static final String STATUS_NO_NFC = "NO_NFC";
+    private static final String STATUS_NFC_DISABLED = "NFC_DISABLED";
+    private static final String STATUS_NFC_STOPPED = "NFC_STOPPED";
+
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
@@ -24,32 +28,27 @@ public class NfcHandler {
         this.callbackContext = callbackContext;
     }
 
-    public boolean checkNfcAvailibility(){
+    public void checkNfcAvailibility(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
-			callbackContext.error("This device doesn't support NFC!");
-		}else{
-			if (!nfcAdapter.isEnabled()){
-				callbackContext.error("NFC is disabled!");
-			}else{
-				callbackContext.success("NFC available!");
-			}
-		}
-        return true;
+			callbackContext.error(STATUS_NO_NFC);
+		}else if (!nfcAdapter.isEnabled()){
+				callbackContext.error(STATUS_NFC_DISABLED);
+        }else {
+				callbackContext.success(STATUS_NFC_OK);
+        }
 	}
-    public boolean startReadingNfc(){
+    public void startReadingNfc(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if(nfcAdapter != null && nfcAdapter.isEnabled()){
             this.isListening = true;
 			setupForegroundDispatch(getActivity(), nfcAdapter);
 		}
-        return true;
     }
-    public boolean stopReadingNfc(){
+    public void stopReadingNfc(){
         this.isListening = false;
         stopForegroundDispatch(getActivity(), nfcAdapter);
-        callbackContext.success("Stopped");
-        return true;
+        callbackContext.success(STATUS_NFC_STOPPED);
     }
 
     public void newIntent(Intent intent) {
