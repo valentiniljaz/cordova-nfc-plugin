@@ -33,22 +33,30 @@ public class NfcHandler {
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
 		}else if (!nfcAdapter.isEnabled()){
-				callbackContext.error(STATUS_NFC_DISABLED);
+			callbackContext.error(STATUS_NFC_DISABLED);
         }else {
-				callbackContext.success(STATUS_NFC_OK);
+			callbackContext.success(STATUS_NFC_OK);
         }
 	}
     public void startReadingNfc(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if(nfcAdapter != null && nfcAdapter.isEnabled()){
-            this.isListening = true;
+		if (nfcAdapter == null) {
+			callbackContext.error(STATUS_NO_NFC);
+		}else if (!nfcAdapter.isEnabled()){
+			callbackContext.error(STATUS_NFC_DISABLED);
+        }else {
+			this.isListening = true;
 			setupForegroundDispatch(getActivity(), nfcAdapter);
-		}
+        }
     }
     public void stopReadingNfc(){
-        this.isListening = false;
-        stopForegroundDispatch(getActivity(), nfcAdapter);
-        callbackContext.success(STATUS_NFC_STOPPED);
+		try{
+			this.isListening = false;
+			stopForegroundDispatch(getActivity(), nfcAdapter);
+			callbackContext.success(STATUS_NFC_STOPPED);
+		}catch(IllegalStateException e){
+			callbackContext.error(e.getMessage());
+		}
     }
 
     public void newIntent(Intent intent) {
@@ -79,7 +87,8 @@ public class NfcHandler {
         try {
             filter.addDataType("*/*");
         }catch (IntentFilter.MalformedMimeTypeException e){
-            throw new RuntimeException("failed", e);
+			callbackContext.error(e.getMessage());
+            throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
         adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);

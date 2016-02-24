@@ -4,7 +4,7 @@
            id="org.nfc.plugin.NfcTechPlugin"
       version="0.1.0">
     <name>NfcTechPlugin</name>
-    <description>PhoneGap NfcTech Plugin</description>
+    <description>Cordova NfcTech Plugin</description>
     <license>MIT</license>
     <keywords>nfc, NfcV</keywords>
  
