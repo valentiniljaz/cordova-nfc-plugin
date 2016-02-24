@@ -11,8 +11,8 @@ win-Function returns Tag-ID
 
 fail-Function returns 
     "NO_NFC" if NFC is not supported or
-    "NFC_DISABLED" if NFC is not enabled or
-    Exception message
+    "NFC_DISABLED" if NFC is not enabled
+	
 ####`NfcTech.removeTechListener(function (win, fail));`
 
 win-Function returns "NFC_STOPPED"

@@ -87,7 +87,6 @@ public class NfcHandler {
         try {
             filter.addDataType("*/*");
         }catch (IntentFilter.MalformedMimeTypeException e){
-			callbackContext.error(e.getMessage());
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
