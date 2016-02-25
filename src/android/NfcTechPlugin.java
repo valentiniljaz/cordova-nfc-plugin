@@ -28,9 +28,9 @@ public class NfcTechPlugin extends CordovaPlugin {
 		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
 		if(action.equalsIgnoreCase(START_READING_NFCV)){
             handler.startReadingNfc();
-        }else if(action.equalsIgnoreCase(STOP_READING_NFCV)){
+        } else if(action.equalsIgnoreCase(STOP_READING_NFCV)){
             handler.stopReadingNfc();
-        } if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
+        } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();
 		}else {
             // invalid action
