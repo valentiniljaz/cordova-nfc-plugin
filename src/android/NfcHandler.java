@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
+import android.nfc.tech.NdefFormatable;
 
 public class NfcHandler {
     private static final String STATUS_NFC_OK = "NFC_OK";
@@ -66,11 +67,34 @@ public class NfcHandler {
         }
     }
 	private void handleNfcIntent(Intent intent) {
-		Tag mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		byte[] id = mTag.getId();
+		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+		byte[] id = tag.getId();
+		NdefFormatable formatable=NdefFormatable.get(tag);
+
+		if (formatable != null) {
+		  try {
+			formatable.connect();
+
+			try {
+			  formatable.format("test");
+			}
+			catch (Exception e) {
+			  callbackContext.error(" let the user know the tag refused to format");
+			}
+		  }
+		  catch (Exception e) {
+			callbackContext.error("let the user know the tag refused to connect");
+		  }
+		  finally {
+			formatable.close();
+		  }
+		}
+		else {
+		  callbackContext.error("let the user know the tag cannot be formatted");
+		}
+		
 		
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
-		pluginResult.setKeepCallback(true);
 		callbackContext.sendPluginResult(pluginResult);
 
         this.isListening = false;
