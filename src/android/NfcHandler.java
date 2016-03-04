@@ -87,11 +87,7 @@ public class NfcHandler {
 			callbackContext.error("let the user know the tag refused to connect");
 		  }
 		  finally {
-			  try{
 			formatable.close();
-			  }catch(Exception e){
-				 callbackContext.error("close error"); 
-			  }
 		  }
 		}
 		else {
