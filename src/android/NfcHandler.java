@@ -70,7 +70,6 @@ public class NfcHandler {
 		byte[] id = mTag.getId();
 		
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
-		pluginResult.setKeepCallback(true);
 		callbackContext.sendPluginResult(pluginResult);
 
         this.isListening = false;
