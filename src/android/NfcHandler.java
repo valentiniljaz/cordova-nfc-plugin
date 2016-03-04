@@ -12,6 +12,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.tech.NfcV;
 import android.nfc.Tag;
 import android.nfc.tech.NdefFormatable;
+import android.nfc.NdefMessage;
 
 public class NfcHandler {
     private static final String STATUS_NFC_OK = "NFC_OK";
@@ -76,7 +77,7 @@ public class NfcHandler {
 			formatable.connect();
 
 			try {
-			  formatable.format("test");
+			  formatable.format(new NdefMessage(id));
 			}
 			catch (Exception e) {
 			  callbackContext.error(" let the user know the tag refused to format");
