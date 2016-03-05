@@ -82,7 +82,7 @@ public class NfcHandler {
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
-        String[][] techList = new String[][]{new String [] {NfcV.class.getName()}};
+        //String[][] techList = new String[][]{new String [] {NfcV.class.getName()}};
         try {
             filter.addDataType("*/*");
         }catch (IntentFilter.MalformedMimeTypeException e){
