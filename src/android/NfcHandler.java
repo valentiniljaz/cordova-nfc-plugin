@@ -38,7 +38,7 @@ public class NfcHandler {
 			callbackContext.success(STATUS_NFC_OK);
         }
 	}
-    public void startReadingNfc(){
+    public void startReadingNfcTech(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
@@ -49,7 +49,7 @@ public class NfcHandler {
 			setupForegroundDispatch(getActivity(), nfcAdapter);
         }
     }
-    public void stopReadingNfc(){
+    public void stopReadingNfcTech(){
 		try{
 			this.isListening = false;
 			stopForegroundDispatch(getActivity(), nfcAdapter);
@@ -89,7 +89,7 @@ public class NfcHandler {
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, null);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {

@@ -24,12 +24,12 @@ public class NfcTechPlugin extends CordovaPlugin {
 	
 	private NfcHandler handler;
     @Override
-    public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
 		if(action.equalsIgnoreCase(START_READING_NFCV)){
-            handler.startReadingNfc();
+            handler.startReadingNfcTech();
         } else if(action.equalsIgnoreCase(STOP_READING_NFCV)){
-            handler.stopReadingNfc();
+            handler.stopReadingNfcTech();
         } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();
 		}else {
