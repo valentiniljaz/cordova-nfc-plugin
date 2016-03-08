@@ -97,7 +97,7 @@ public class NfcHandler {
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, rechList);
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
