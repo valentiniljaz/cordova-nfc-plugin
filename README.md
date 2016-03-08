@@ -1,11 +1,11 @@
 # cordova-nfc-plugin
-This Plugin reads NfcV Tags.
+This Plugin reads any Tech-Tag.
 
 Usage:
 ----------------------------------------------------
 ####`NfcTech.addTechListener(function (win, fail));`
 
-Adds a Listener for Tags with NfcV-Technology.
+Adds a Listener for Tags with any Technology.
 
 win-Function returns Tag-ID
 

@@ -9,7 +9,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
-import android.nfc.tech.NfcV;
+import android.nfc.tech.*;
 import android.nfc.Tag;
 
 public class NfcHandler {
@@ -82,14 +82,22 @@ public class NfcHandler {
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
-        //String[][] techList = new String[][]{new String [] {NfcV.class.getName()}};
+        String[][] techList = new String[][]{
+			new String [] {NfcV.class.getName()},
+			new String [] {NfcA.class.getName()},
+			new String [] {NfcB.class.getName()},
+			new String [] {NfcF.class.getName()},
+			new String [] {IsoDep.class.getName()},
+			new String [] {Ndef.class.getName()},
+			new String [] {NdefFormatable.class.getName()}
+			};
         try {
             filter.addDataType("*/*");
         }catch (IntentFilter.MalformedMimeTypeException e){
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, null);
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, rechList);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
