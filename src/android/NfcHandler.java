@@ -180,7 +180,7 @@ public class NfcHandler {
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
 		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		
-		Toast.makeText(getActivity(), "given id is: " + data[0] + "-" + data[1] + "-" + data[2] + "-" + data[3],
+		Toast.makeText(getActivity(), "given id is: " + data[0] + ";" + data[1] + ";" + data[2] + ";" + data[3],
 		Toast.LENGTH_LONG).show();
 		if (tag == null) {
 			callbackContext.error("NULL");
@@ -209,10 +209,10 @@ public class NfcHandler {
 		// Command
 		arrByte[1] = 0x21;
 		arrByte[2] = (byte) block; // IMMER im gleichen Block speichern
-		arrByte[3] = data[0];
-		arrByte[4] = data[1];
-		arrByte[5] = data[2];
-		arrByte[6] = data[3];
+		arrByte[3] = (byte) data[0];
+		arrByte[4] = (byte) data[1];
+		arrByte[5] = (byte) data[2];
+		arrByte[6] = (byte) data[3];
 		/*
 		for (int i = 0; i < (data.length / 4); i++) {
 
