@@ -83,12 +83,6 @@ public class NfcHandler {
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
         String[][] techList = new String[][]{
-			new String [] {NfcV.class.getName()},
-			new String [] {NfcA.class.getName()},
-			new String [] {NfcB.class.getName()},
-			new String [] {NfcF.class.getName()},
-			new String [] {IsoDep.class.getName()},
-			new String [] {Ndef.class.getName()},
 			new String [] {NdefFormatable.class.getName()}
 			};
         try {
