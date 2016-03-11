@@ -76,7 +76,7 @@ public class NfcHandler {
 			try {
 				nfcvTag.connect();
 				int offset = 0;  // offset of first block to read
-				int blocks = 64;  // number of blocks to read
+				int blocks = 7;  // number of blocks to read
 				byte[] cmd = new byte[]{
 						(byte)0x60,                  // flags: addressed (= UID field present)
 						(byte)0x23,                  // command: READ MULTIPLE BLOCKS
