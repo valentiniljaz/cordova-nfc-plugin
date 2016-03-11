@@ -137,10 +137,15 @@ public class NfcHandler {
 			}
 		}
 		String str = new String(id, StandardCharsets.UTF_8);
-		//String result = (str.split("eqx")[1]).split("#")[0];
-		//if ("".equals(result)){
-		//	result = "null";
-		//}
+		String result = "";
+		try{
+			result = (str.split("eqx")[1]).split("#")[0];
+			if ("".equals(result)){
+				result = "null";
+			}
+		}catch(Exception e){
+			result = "null";
+		}
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, str);
 		callbackContext.sendPluginResult(pluginResult);
 	}
