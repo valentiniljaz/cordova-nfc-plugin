@@ -17,6 +17,7 @@ import android.nfc.tech.*;
 import android.nfc.Tag;
 
 public class NfcHandler {
+	private static final int block = 50;
     private static final String STATUS_NFC_OK = "NFC_OK";
     private static final String STATUS_NO_NFC = "NO_NFC";
     private static final String STATUS_NFC_DISABLED = "NFC_DISABLED";
@@ -131,7 +132,7 @@ public class NfcHandler {
 				byte[] cmd = new byte[]{
 						(byte)0x00,                  // flags: addressed (= UID field present)
 						(byte)0x20,                  // command: READ ONE BLOCK
-						(byte)10					 // IMMER im 10. Block
+						(byte)block					 // IMMER im gleichen Block
 				};
 				id = nfcv.transceive(cmd);
 			} catch (IOException e) {
@@ -143,8 +144,7 @@ public class NfcHandler {
 				}
 			}
 		}
-		int value = ((id[0] & 0xFF) << 24) | ((id[1] & 0xFF) << 16)
-        | ((id[2] & 0xFF) << 8) | (id[3] & 0xFF);
+		int value = byteArrayToInt(id);
 		//String str = new String(id);
 		/*String result = "";
 		try{
@@ -158,14 +158,27 @@ public class NfcHandler {
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
 		callbackContext.sendPluginResult(pluginResult);
 	}
+	public static int byteArrayToInt(byte[] b) {
+		if (b.length == 4)
+		  return b[0] << 24 | (b[1] & 0xff) << 16 | (b[2] & 0xff) << 8
+			  | (b[3] & 0xff);
+		else if (b.length == 2)
+		  return 0x00 << 24 | 0x00 << 16 | (b[0] & 0xff) << 8 | (b[1] & 0xff);
+
+		return 0;
+	}
+	public static byte[] intToByteArray(int value) {
+		return new byte[] {
+				(byte)(value >>> 24),
+				(byte)(value >>> 16),
+				(byte)(value >>> 8),
+				(byte)value};
+	}
 	public void writeNfcV(Tag tag, int id) throws IOException{
 		//String write = "eqx" + id + "#";
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
-		byte[] data = new byte[4];/* = ByteBuffer.allocate(4).putInt(id).array();*/
-		data[0] = (byte) ((id >> 24) & 0xFF);
-		data[1] = (byte) ((id >> 16) & 0xFF);
-		data[2] = (byte) ((id >> 8) & 0xFF);
-		data[3] = (byte) (id & 0xFF);
+		byte[] data = intToByteArray(id);/* = ByteBuffer.allocate(4).putInt(id).array();*/
+		
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
@@ -173,7 +186,7 @@ public class NfcHandler {
 		NfcV nfcv = NfcV.get(tag);
 
 		nfcv.connect();
-
+/*
 		// NfcV Tag has 64 Blocks with 4 Byte
 		if ((data.length / 4) > 64) {
 			// ERROR HERE!
@@ -186,13 +199,13 @@ public class NfcHandler {
 			System.arraycopy(data, 0, ndata, 0, data.length);
 			data = ndata;
 		}
-
+*/
 		byte[] arrByte = new byte[7];
 		// Flags
-		arrByte[0] = 0x42;
+		arrByte[0] = 0x00;
 		// Command
 		arrByte[1] = 0x21;
-		arrByte[2] = (byte) 10; // IMMER IM 10. Block speichern
+		arrByte[2] = (byte) block; // IMMER im gleichen Block speichern
 		arrByte[3] = data[0];
 		arrByte[4] = data[1];
 		arrByte[5] = data[2];
