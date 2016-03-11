@@ -35,7 +35,7 @@ public class NfcTagPlugin extends CordovaPlugin {
         } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();
 		} else if(action.equalsIgnoreCase(START_WRITING_NFCV)){
-			handler.startWritingNfcV(args.getString(0));
+			handler.startWritingNfcV(args.getInt(0));
 		} else if(action.equalsIgnoreCase(STOP_WRITING_NFCV)){
 			handler.stopWritingNfcV();
 		}else {

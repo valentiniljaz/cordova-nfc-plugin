@@ -25,7 +25,7 @@ public class NfcHandler {
     private Activity activity;
 	private CallbackContext callbackContext;
     private boolean isReading, isWriting;
-	private String message;
+	private int message;
 
     public NfcHandler(Activity activity, final CallbackContext callbackContext){
         this.activity = activity;
@@ -116,7 +116,7 @@ public class NfcHandler {
 		if(nfcv != null){
 			try {
 				nfcv.connect();
-				int offset = 0;  // offset of first block to read
+				/*int offset = 0;  // offset of first block to read
 				int blocks = 64;  // number of blocks to read
 				byte[] cmd = new byte[]{
 						(byte)0x60,                  // flags: addressed (= UID field present)
@@ -126,7 +126,13 @@ public class NfcHandler {
 						(byte)((blocks - 1) & 0x0ff) // number of blocks (-1 as 0x00 means one block)
 				};
 				System.arraycopy(id, 0, cmd, 2, 8);
-				id = nfcv.transceive(cmd);
+				id = nfcv.transceive(cmd);*/
+				byte[] cmd = new byte[]{
+						(byte)0x00,                  // flags: addressed (= UID field present)
+						(byte)0x20,                  // command: READ ONE BLOCK
+						(byte)10					 // IMMER im 10. Block
+				};
+				id = nfcv.transceive(cmd);*/
 			} catch (IOException e) {
 				callbackContext.error(nfcv.toString());
 			} finally {
@@ -136,8 +142,8 @@ public class NfcHandler {
 				}
 			}
 		}
-		String str = new String(id, StandardCharsets.UTF_8);
-		String result = "";
+		String str = new String(id);
+		/*String result = "";
 		try{
 			result = (str.split("eqx")[1]).split("#")[0];
 			if ("".equals(result)){
@@ -145,11 +151,11 @@ public class NfcHandler {
 			}
 		}catch(Exception e){
 			result = "null";
-		}
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+		}*/
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, str);
 		callbackContext.sendPluginResult(pluginResult);
 	}
-	public void writeNfcV(Tag tag, String id) throws IOException{
+	public void writeNfcV(Tag tag, int id) throws IOException{
 		String write = "eqx" + id + "#";
 		byte[] data = write.getBytes(StandardCharsets.UTF_8);
 		if (tag == null) {
@@ -178,7 +184,12 @@ public class NfcHandler {
 		arrByte[0] = 0x42;
 		// Command
 		arrByte[1] = 0x21;
-
+		arrByte[2] = (byte) 10; // IMMER IM 10. Block speichern
+		arrByte[3] = data[0];
+		arrByte[4] = data[1];
+		arrByte[5] = data[2];
+		arrByte[6] = data[3];
+		/*
 		for (int i = 0; i < (data.length / 4); i++) {
 
 			// block number
@@ -200,8 +211,17 @@ public class NfcHandler {
 				throw e;
 			}
 			}
-		}
-
+		}*/
+		try {
+			nfcv.transceive(arrByte);
+			} catch (IOException e) {
+			if (e.getMessage().equals("Tag was lost.")) {
+				// continue, because of Tag bug
+			} else {
+				callbackContext.error("Couldn't write on Tag");
+				throw e;
+			}
+			}
 		nfcv.close();
 	}
 	
