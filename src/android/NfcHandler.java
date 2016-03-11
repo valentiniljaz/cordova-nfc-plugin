@@ -110,11 +110,10 @@ public class NfcHandler {
 	public void readNfcV (Tag tag) {
 		if (tag == null) {
 			callbackContext.error("NULL");
-			return;
 		}
 		byte[] id = tag.getId();
 		NfcV nfcv = NfcV.get(tag);
-		if(nfcv!=null){
+		if(nfcv != null){
 			try {
 				nfcv.connect();
 				int offset = 0;  // offset of first block to read
@@ -138,10 +137,10 @@ public class NfcHandler {
 			}
 		}
 		String str = new String(id, StandardCharsets.UTF_8);
-		String result = (str.split("eqx")[1]).split("#")[0];
-		if ("".equals(result)){
-			result = "null";
-		}
+		//String result = (str.split("eqx")[1]).split("#")[0];
+		//if ("".equals(result)){
+		//	result = "null";
+		//}
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
 		callbackContext.sendPluginResult(pluginResult);
 	}
