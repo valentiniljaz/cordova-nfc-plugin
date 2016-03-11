@@ -247,7 +247,7 @@ public class NfcHandler {
 				};
 			byte[] result = nfcv.transceive(cmd);
 			int resultInt = ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
-			Toast.makeText(getActivity(), "read id is: " + result[0] + ";" + result[1] + ";" + result[2] + ";" + result[3],
+			Toast.makeText(getActivity(), "read id is: " + result[1] + ";" + result[2] + ";" + result[3] + ";" + result[4],
 			Toast.LENGTH_LONG).show();
 			Toast.makeText(getActivity(), "read intid is: " + resultInt,
 			Toast.LENGTH_LONG).show();
