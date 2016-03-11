@@ -94,8 +94,8 @@ public class NfcHandler {
 				}
 			}
 		}
-		
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
+		String str = new String(id, StandardCharsets.UTF_8);
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, str);
 		callbackContext.sendPluginResult(pluginResult);
 
         this.isListening = false;
