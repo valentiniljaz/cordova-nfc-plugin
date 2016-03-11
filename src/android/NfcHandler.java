@@ -6,6 +6,7 @@ import org.apache.cordova.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.nio.ByteBuffer;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -63,7 +64,7 @@ public class NfcHandler {
 			callbackContext.error(e.getMessage());
 		}
     }
-	public void startWritingNfcV(String message){
+	public void startWritingNfcV(int message){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
@@ -156,8 +157,9 @@ public class NfcHandler {
 		callbackContext.sendPluginResult(pluginResult);
 	}
 	public void writeNfcV(Tag tag, int id) throws IOException{
-		String write = "eqx" + id + "#";
-		byte[] data = write.getBytes(StandardCharsets.UTF_8);
+		//String write = "eqx" + id + "#";
+		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
+		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
