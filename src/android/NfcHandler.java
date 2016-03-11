@@ -61,15 +61,17 @@ public class NfcHandler {
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (this.isListening && NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             handleNfcIntent(intent);
         }
     }
 	private void handleNfcIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		byte[] id = tag.getId();
-		
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
+		NfcV nfcv = NfcV.get(tag);
+		byte id = nfcv.getDsfId();
+		//byte[] id = tag.getId();
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, id);
+		//PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 		callbackContext.sendPluginResult(pluginResult);
 
         this.isListening = false;
@@ -81,9 +83,9 @@ public class NfcHandler {
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
-        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
         String[][] techList = new String[][]{
-			new String [] {NdefFormatable.class.getName()}
+			new String [] {NdefFormatable.class.getName(), NfcV.class.getName()}
 			};
         try {
             filter.addDataType("*/*");
