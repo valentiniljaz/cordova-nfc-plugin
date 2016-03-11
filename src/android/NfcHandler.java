@@ -238,6 +238,14 @@ public class NfcHandler {
 		}*/
 		try {
 			nfcv.transceive(arrByte);
+			byte[] cmd = new byte[]{
+						(byte)0x00,                  // flags: addressed (= UID field present)
+						(byte)0x20,                  // command: READ ONE BLOCK
+						(byte)block					 // IMMER im gleichen Block
+				};
+			byte[] result = nfcv.transceive(cmd);
+			Toast.makeText(getActivity(), "read id is: " + byteArrayToInt(result),
+			Toast.LENGTH_LONG).show();
 			} catch (IOException e) {
 			if (e.getMessage().equals("Tag was lost.")) {
 				// continue, because of Tag bug
