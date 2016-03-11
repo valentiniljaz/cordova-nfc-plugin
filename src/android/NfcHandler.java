@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.*;
 import android.nfc.Tag;
+import android.widget.Toast;
 
 public class NfcHandler {
 	private static final int block = 50;
@@ -177,6 +178,8 @@ public class NfcHandler {
 	public void writeNfcV(Tag tag, int id) throws IOException{
 		//String write = "eqx" + id + "#";
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
+		Toast.makeText(getActivity(), "given id is: " + id,
+		Toast.LENGTH_LONG).show();
 		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		
 		if (tag == null) {
