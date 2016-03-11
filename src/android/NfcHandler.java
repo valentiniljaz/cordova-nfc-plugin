@@ -4,6 +4,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import android.app.Activity;
 import android.app.PendingIntent;
