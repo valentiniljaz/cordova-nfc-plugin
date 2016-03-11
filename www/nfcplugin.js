@@ -5,11 +5,11 @@ var nfc = {
 	removeTagListener: function (success, error) {
         cordova.exec(success, error, "NfcTagPlugin", "stopReadingNfcV", []);
     },
-	addTagWriter: function (success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "startWritingNfcV", []);
+	addTagWriter: function (id, success, error) {
+        cordova.exec(success, error, "NfcTagPlugin", "startWritingNfcV", [id]);
     },
-	removeTagWriter: function (id, success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "stopWritingNfcV", [id]);
+	removeTagWriter: function (success, error) {
+        cordova.exec(success, error, "NfcTagPlugin", "stopWritingNfcV", []);
     },
 	isAvailable: function (success, error) {
         cordova.exec(success, error, "NfcTagPlugin", "checkNfc", []);
