@@ -18,7 +18,7 @@ import android.nfc.Tag;
 import android.widget.Toast;
 
 public class NfcHandler {
-	private static final int block = 50;
+	private static final int block = 10;
     private static final String STATUS_NFC_OK = "NFC_OK";
     private static final String STATUS_NO_NFC = "NO_NFC";
     private static final String STATUS_NFC_DISABLED = "NFC_DISABLED";
