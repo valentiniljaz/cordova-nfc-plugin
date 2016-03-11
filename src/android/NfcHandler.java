@@ -146,7 +146,7 @@ public class NfcHandler {
 		}catch(Exception e){
 			result = "null";
 		}
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, str);
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
 		callbackContext.sendPluginResult(pluginResult);
 	}
 	public void writeNfcV(Tag tag, String id) throws IOException{
