@@ -61,17 +61,15 @@ public class NfcHandler {
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+        if (this.isListening && NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             handleNfcIntent(intent);
         }
     }
 	private void handleNfcIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		NfcV nfcv = NfcV.get(tag);
 		byte id = nfcv.getDsfId();
-		//byte[] id = tag.getId();
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, id);
-		//PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
+		
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 		callbackContext.sendPluginResult(pluginResult);
 
         this.isListening = false;
@@ -93,7 +91,7 @@ public class NfcHandler {
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+        adapter.enableForegroundDispatch(activity, pendingIntent, null, null);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
