@@ -3,6 +3,7 @@ package nfc.plugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.*;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.app.PendingIntent;
