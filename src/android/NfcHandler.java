@@ -5,6 +5,7 @@ import org.apache.cordova.PluginResult;
 import org.apache.cordova.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -93,19 +94,16 @@ public class NfcHandler {
 	private void handleNfcVIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (this.isReading){
-			String result = readNfcV(tag);
-			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
-			callbackContext.sendPluginResult(pluginResult);
-
+			readNfcV(tag);
 			this.isReading = false;
-		}else if (this.isWriting()){
+		}else if (this.isWriting){
 			writeNfcV(tag, message);
 			callbackContext.success("success");
 		}
 		
 		//stopForegroundDispatch(getActivity(), nfcAdapter);
 	}
-	public static void readNfcV (Tag tag) {
+	public void readNfcV (Tag tag) {
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
@@ -136,14 +134,14 @@ public class NfcHandler {
 			}
 		}
 		String str = new String(id, StandardCharsets.UTF_8);
-		String id = (str.split("eqx")[1]).split["#"][0];
-		if ("".equals(id)){
-			id = "null";
+		String result = (str.split("eqx")[1]).split("#")[0];
+		if ("".equals(result)){
+			result = "null";
 		}
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, id);
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
 		callbackContext.sendPluginResult(pluginResult);
 	}
-	public static void writeNfcV(Tag tag, String id) throws IOException, FormatException, InterruptedException {
+	public void writeNfcV(Tag tag, String id){
 		String write = "eqx" + id + "#";
 		byte[] data = write.getBytes(StandardCharsets.UTF_8);
 		if (tag == null) {
@@ -153,8 +151,6 @@ public class NfcHandler {
 		NfcV nfcv = NfcV.get(tag);
 
 		nfcv.connect();
-
-		Log.d(TAG, "Max Transceive Bytes: " + nfcv.getMaxTransceiveLength());
 
 		// NfcV Tag has 64 Blocks with 4 Byte
 		if ((data.length / 4) > 64) {
@@ -198,7 +194,7 @@ public class NfcHandler {
 			}
 		}
 
-		nfc.close();
+		nfcv.close();
 	}
 	
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
