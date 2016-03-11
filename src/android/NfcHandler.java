@@ -76,7 +76,7 @@ public class NfcHandler {
 				//{flags:0x00, read multiple blocks command: 0x23, start at block 0: 0x00, read 9 blocks (0 to 8): 0x08}
 				id = nfcvTag.transceive(new byte[] {(byte)0x00,(byte)0x23,(byte)0x00,(byte)0x08});
 			} catch (IOException e) {
-				Log.d("NFCService", nfcvTag.toString());
+				callbackContext.error(nfcvTag.toString());
 			} finally {
 				try {
 					nfcvTag.close();
@@ -107,7 +107,7 @@ public class NfcHandler {
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filter, techList);
+        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
