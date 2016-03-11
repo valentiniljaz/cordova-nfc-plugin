@@ -178,10 +178,10 @@ public class NfcHandler {
 	public void writeNfcV(Tag tag, int id) throws IOException{
 		//String write = "eqx" + id + "#";
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
-		Toast.makeText(getActivity(), "given id is: " + id,
-		Toast.LENGTH_LONG).show();
 		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		
+		Toast.makeText(getActivity(), "given id is: " + data[0] + "-" + data[1] + "-" + data[2] + "-" + data[3],
+		Toast.LENGTH_LONG).show();
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
