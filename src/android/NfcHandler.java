@@ -61,7 +61,7 @@ public class NfcHandler {
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+        if (this.isListening && NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             handleNfcIntent(intent);
         }
     }
