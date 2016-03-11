@@ -141,7 +141,7 @@ public class NfcHandler {
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
 		callbackContext.sendPluginResult(pluginResult);
 	}
-	public void writeNfcV(Tag tag, String id){
+	public void writeNfcV(Tag tag, String id) throws IOException{
 		String write = "eqx" + id + "#";
 		byte[] data = write.getBytes(StandardCharsets.UTF_8);
 		if (tag == null) {
