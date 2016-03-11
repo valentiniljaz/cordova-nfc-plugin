@@ -81,7 +81,7 @@ public class NfcHandler {
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
 
-        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
+        IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         String[][] techList = new String[][]{
 			new String [] {NdefFormatable.class.getName()}
 			};
