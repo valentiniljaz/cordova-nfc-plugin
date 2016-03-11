@@ -67,7 +67,7 @@ public class NfcHandler {
     }
 	private void handleNfcIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		byte id = nfcv.getDsfId();
+		byte[] id = tag.getId();
 		
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 		callbackContext.sendPluginResult(pluginResult);
