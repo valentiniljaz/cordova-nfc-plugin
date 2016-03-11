@@ -143,7 +143,9 @@ public class NfcHandler {
 				}
 			}
 		}
-		String str = new String(id);
+		int value = ((id[0] & 0xFF) << 24) | ((id[1] & 0xFF) << 16)
+        | ((id[2] & 0xFF) << 8) | (id[3] & 0xFF);
+		//String str = new String(id);
 		/*String result = "";
 		try{
 			result = (str.split("eqx")[1]).split("#")[0];
@@ -153,13 +155,17 @@ public class NfcHandler {
 		}catch(Exception e){
 			result = "null";
 		}*/
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, str);
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
 		callbackContext.sendPluginResult(pluginResult);
 	}
 	public void writeNfcV(Tag tag, int id) throws IOException{
 		//String write = "eqx" + id + "#";
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
-		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
+		byte[] data = new byte[4];/* = ByteBuffer.allocate(4).putInt(id).array();*/
+		data[0] = (byte) ((id >> 24) & 0xFF);
+		data[1] = (byte) ((id >> 16) & 0xFF);
+		data[2] = (byte) ((id >> 8) & 0xFF);
+		data[3] = (byte) (id & 0xFF);
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
