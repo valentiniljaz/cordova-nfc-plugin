@@ -132,7 +132,7 @@ public class NfcHandler {
 						(byte)0x20,                  // command: READ ONE BLOCK
 						(byte)10					 // IMMER im 10. Block
 				};
-				id = nfcv.transceive(cmd);*/
+				id = nfcv.transceive(cmd);
 			} catch (IOException e) {
 				callbackContext.error(nfcv.toString());
 			} finally {
