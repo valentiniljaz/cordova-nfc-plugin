@@ -23,7 +23,8 @@ public class NfcHandler {
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
-    private boolean isListening;
+    private boolean isReading, isWriting;
+	private String message;
 
     public NfcHandler(Activity activity, final CallbackContext callbackContext){
         this.activity = activity;
@@ -40,43 +41,82 @@ public class NfcHandler {
 			callbackContext.success(STATUS_NFC_OK);
         }
 	}
-    public void startReadingNfcTags(){
+    public void startReadingNfcV(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
 		}else if (!nfcAdapter.isEnabled()){
 			callbackContext.error(STATUS_NFC_DISABLED);
         }else {
-			this.isListening = true;
+			this.isReading = true;
+			this.isWriting = false;
 			setupForegroundDispatch(getActivity(), nfcAdapter);
         }
     }
-    public void stopReadingNfcTags(){
+    public void stopReadingNfcV(){
 		try{
-			this.isListening = false;
+			this.isReading = false;
 			stopForegroundDispatch(getActivity(), nfcAdapter);
 			callbackContext.success(STATUS_NFC_STOPPED);
 		}catch(IllegalStateException e){
 			callbackContext.error(e.getMessage());
 		}
     }
-
+	public void startWritingNfcV(String message){
+		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+		if (nfcAdapter == null) {
+			callbackContext.error(STATUS_NO_NFC);
+		}else if (!nfcAdapter.isEnabled()){
+			callbackContext.error(STATUS_NFC_DISABLED);
+        }else {
+			this.isWriting = true;
+			this.isReading = false;
+			this.message = message;
+			setupForegroundDispatch(getActivity(), nfcAdapter);
+        }
+	}
+	public void stopWritingNfcV(){
+		try{
+			this.isWriting = false;
+			stopForegroundDispatch(getActivity(), nfcAdapter);
+			callbackContext.success(STATUS_NFC_STOPPED);
+		}catch(IllegalStateException e){
+			callbackContext.error(e.getMessage());
+		}
+    }
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            handleNfcIntent(intent);
+        if ((this.isReading || this.isWriting) && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            handleNfcVIntent(intent);
         }
     }
-	private void handleNfcIntent(Intent intent) {
+	private void handleNfcVIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+		if (this.isReading){
+			String result = readNfcV(tag);
+			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+			callbackContext.sendPluginResult(pluginResult);
+
+			this.isReading = false;
+		}else if (this.isWriting()){
+			writeNfcV(tag, message);
+			callbackContext.success("success");
+		}
 		
+		//stopForegroundDispatch(getActivity(), nfcAdapter);
+	}
+	public static void readNfcV (Tag tag) {
+		if (tag == null) {
+			callbackContext.error("NULL");
+			return;
+		}
 		byte[] id = tag.getId();
-		NfcV nfcvTag = NfcV.get(tag);
-		if(nfcvTag!=null){
+		NfcV nfcv = NfcV.get(tag);
+		if(nfcv!=null){
 			try {
-				nfcvTag.connect();
-				int offset = 1;  // offset of first block to read
-				int blocks = 8;  // number of blocks to read
+				nfcv.connect();
+				int offset = 0;  // offset of first block to read
+				int blocks = 64;  // number of blocks to read
 				byte[] cmd = new byte[]{
 						(byte)0x60,                  // flags: addressed (= UID field present)
 						(byte)0x23,                  // command: READ MULTIPLE BLOCKS
@@ -85,23 +125,82 @@ public class NfcHandler {
 						(byte)((blocks - 1) & 0x0ff) // number of blocks (-1 as 0x00 means one block)
 				};
 				System.arraycopy(id, 0, cmd, 2, 8);
-				id = nfcvTag.transceive(cmd);
+				id = nfcv.transceive(cmd);
 			} catch (IOException e) {
-				callbackContext.error(nfcvTag.toString());
+				callbackContext.error(nfcv.toString());
 			} finally {
 				try {
-					nfcvTag.close();
+					nfcv.close();
 				} catch (IOException e) {
 				}
 			}
 		}
-		//String str = new String(id, StandardCharsets.UTF_8);
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
+		String str = new String(id, StandardCharsets.UTF_8);
+		String id = (str.split("eqx")[1]).split["#"][0];
+		if ("".equals(id)){
+			id = "null";
+		}
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, id);
 		callbackContext.sendPluginResult(pluginResult);
-
-        this.isListening = false;
-		//stopForegroundDispatch(getActivity(), nfcAdapter);
 	}
+	public static void writeNfcV(Tag tag, String id) throws IOException, FormatException, InterruptedException {
+		String write = "eqx" + id + "#";
+		byte[] data = write.getBytes(StandardCharsets.UTF_8);
+		if (tag == null) {
+			callbackContext.error("NULL");
+			return;
+		}
+		NfcV nfcv = NfcV.get(tag);
+
+		nfcv.connect();
+
+		Log.d(TAG, "Max Transceive Bytes: " + nfcv.getMaxTransceiveLength());
+
+		// NfcV Tag has 64 Blocks with 4 Byte
+		if ((data.length / 4) > 64) {
+			// ERROR HERE!
+			callbackContext.error("too long");
+		}
+
+		if ((data.length % 4) != 0) {
+			byte[] ndata = new byte[(data.length) + (4 - (data.length % 4))];
+			Arrays.fill(ndata, (byte) 0x00);
+			System.arraycopy(data, 0, ndata, 0, data.length);
+			data = ndata;
+		}
+
+		byte[] arrByte = new byte[7];
+		// Flags
+		arrByte[0] = 0x42;
+		// Command
+		arrByte[1] = 0x21;
+
+		for (int i = 0; i < (data.length / 4); i++) {
+
+			// block number
+			arrByte[2] = (byte) (i);
+
+			// data, DONT SEND LSB FIRST!
+			arrByte[3] = data[(i * 4)];
+			arrByte[4] = data[(i * 4) + 1];
+			arrByte[5] = data[(i * 4) + 2];
+			arrByte[6] = data[(i * 4) + 3];
+
+			try {
+			nfcv.transceive(arrByte);
+			} catch (IOException e) {
+			if (e.getMessage().equals("Tag was lost.")) {
+				// continue, because of Tag bug
+			} else {
+				callbackContext.error("Couldn't write on Tag");
+				throw e;
+			}
+			}
+		}
+
+		nfc.close();
+	}
+	
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

@@ -18,8 +18,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 public class NfcTagPlugin extends CordovaPlugin {
-    private static final String START_READING_TAGS = "startReadingNfcTags";
-    private static final String STOP_READING_TAGS = "stopReadingNfcTags";
+    private static final String START_READING_NFCV = "startReadingNfcV";
+    private static final String STOP_READING_NFCV = "stopReadingNfcV";
+	private static final String START_WRITING_NFCV = "startWritingNfcV";
+    private static final String STOP_WRITING_NFCV = "stopWritingNfcV";
     private static final String CHECK_NFC_AVAILIBILITY = "checkNfc";
 	
 	private NfcHandler handler;
@@ -27,11 +29,15 @@ public class NfcTagPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
 		if(action.equalsIgnoreCase(START_READING_TAGS)){
-            handler.startReadingNfcTags();
+            handler.startReadingNfcV();
         } else if(action.equalsIgnoreCase(STOP_READING_TAGS)){
-            handler.stopReadingNfcTags();
+            handler.stopReadingNfcV();
         } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();
+		} else if(action.equalsIgnoreCase(START_WRITING_NFCV)){
+			handler.startWritingNfcV(args.getJsonString(0));
+		} else if(action.equalsIgnoreCase(STOP_WRITING_NFCV)){
+			handler.stopWritingNfcV();
 		}else {
             // invalid action
             return false;
