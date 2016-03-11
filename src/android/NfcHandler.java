@@ -74,8 +74,17 @@ public class NfcHandler {
 		if(nfcvTag!=null){
 			try {
 				nfcvTag.connect();
-				//{flags:0x00, read multiple blocks command: 0x23, start at block 0: 0x00, read 9 blocks (0 to 8): 0x08}
-				id = nfcvTag.transceive(new byte[] {(byte)0x00,(byte)0x23,(byte)0x00,(byte)0x08});
+				int offset = 0;  // offset of first block to read
+				int blocks = 1;  // number of blocks to read
+				byte[] cmd = new byte[]{
+						(byte)0x60,                  // flags: addressed (= UID field present)
+						(byte)0x23,                  // command: READ MULTIPLE BLOCKS
+						(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,  // placeholder for tag UID
+						(byte)(offset & 0x0ff),      // first block number
+						(byte)((blocks - 1) & 0x0ff) // number of blocks (-1 as 0x00 means one block)
+				};
+				System.arraycopy(id, 0, cmd, 2, 8);
+				id = nfcvTag.transceive(cmd);
 			} catch (IOException e) {
 				callbackContext.error(nfcvTag.toString());
 			} finally {
