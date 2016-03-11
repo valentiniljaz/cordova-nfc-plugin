@@ -244,7 +244,7 @@ public class NfcHandler {
 						(byte)block					 // IMMER im gleichen Block
 				};
 			byte[] result = nfcv.transceive(cmd);
-			Toast.makeText(getActivity(), "read id is: " + byteArrayToInt(result),
+			Toast.makeText(getActivity(), "read id is: " + result[0] + ";" + result[1] + ";" + result[2] + ";" + result[3],
 			Toast.LENGTH_LONG).show();
 			} catch (IOException e) {
 			if (e.getMessage().equals("Tag was lost.")) {
