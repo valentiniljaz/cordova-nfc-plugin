@@ -182,6 +182,8 @@ public class NfcHandler {
 		
 		Toast.makeText(getActivity(), "given id is: " + data[0] + ";" + data[1] + ";" + data[2] + ";" + data[3],
 		Toast.LENGTH_LONG).show();
+		Toast.makeText(getActivity(), "given hexid is: " + bytesToHex(data),
+		Toast.LENGTH_LONG).show();
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
