@@ -17,18 +17,18 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public class NfcTechPlugin extends CordovaPlugin {
-    private static final String START_READING_NFCV = "startReadingNfcTech";
-    private static final String STOP_READING_NFCV = "stopReadingNfcTech";
+public class NfcTagPlugin extends CordovaPlugin {
+    private static final String START_READING_TAGS = "startReadingNfcTags";
+    private static final String STOP_READING_TAGS = "stopReadingNfcTags";
     private static final String CHECK_NFC_AVAILIBILITY = "checkNfc";
 	
 	private NfcHandler handler;
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
-		if(action.equalsIgnoreCase(START_READING_NFCV)){
+		if(action.equalsIgnoreCase(START_READING_TAGS)){
             handler.startReadingNfcTech();
-        } else if(action.equalsIgnoreCase(STOP_READING_NFCV)){
+        } else if(action.equalsIgnoreCase(STOP_READING_TAGS)){
             handler.stopReadingNfcTech();
         } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();

@@ -1,12 +1,12 @@
-var NfcTech = {
-	addTechListener: function (success, error) {
-        cordova.exec(success, error, "NfcTechPlugin", "startReadingNfcTech", []);
+var nfc = {
+	addTagListener: function (success, error) {
+        cordova.exec(success, error, "NfcTagPlugin", "startReadingNfcTags", []);
     },
-	removeTechListener: function (success, error) {
-        cordova.exec(success, error, "NfcTechPlugin", "stopReadingNfcTech", []);
+	removeTagListener: function (success, error) {
+        cordova.exec(success, error, "NfcTagPlugin", "stopReadingNfcTags", []);
     },
 	isAvailable: function (success, error) {
-        cordova.exec(success, error, "NfcTechPlugin", "checkNfc", []);
+        cordova.exec(success, error, "NfcTagPlugin", "checkNfc", []);
     }
 }
-module.exports = NfcTech;
+module.exports = nfc;
