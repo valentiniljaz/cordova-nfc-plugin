@@ -177,7 +177,7 @@ public class NfcHandler {
 	public void writeNfcV(Tag tag, int id) throws IOException{
 		//String write = "eqx" + id + "#";
 		//byte[] data = write.getBytes(StandardCharsets.UTF_8);
-		byte[] data =  = ByteBuffer.allocate(4).putInt(id).array();
+		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		
 		if (tag == null) {
 			callbackContext.error("NULL");
