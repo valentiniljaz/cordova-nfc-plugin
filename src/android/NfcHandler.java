@@ -99,7 +99,7 @@ public class NfcHandler {
 		}else if (this.isWriting){
 			try{
 				writeNfcV(tag, message);
-			}catch(IOException){
+			}catch(IOException e){
 				callbackContext.error("IOException");
 			}
 			callbackContext.success("success");
