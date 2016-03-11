@@ -27,9 +27,9 @@ public class NfcTagPlugin extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
 		if(action.equalsIgnoreCase(START_READING_TAGS)){
-            handler.startReadingNfcTech();
+            handler.startReadingNfcTags();
         } else if(action.equalsIgnoreCase(STOP_READING_TAGS)){
-            handler.stopReadingNfcTech();
+            handler.stopReadingNfcTags();
         } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
 			handler.checkNfcAvailibility();
 		}else {

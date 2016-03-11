@@ -38,7 +38,7 @@ public class NfcHandler {
 			callbackContext.success(STATUS_NFC_OK);
         }
 	}
-    public void startReadingNfcTech(){
+    public void startReadingNfcTags(){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
@@ -49,7 +49,7 @@ public class NfcHandler {
 			setupForegroundDispatch(getActivity(), nfcAdapter);
         }
     }
-    public void stopReadingNfcTech(){
+    public void stopReadingNfcTags(){
 		try{
 			this.isListening = false;
 			stopForegroundDispatch(getActivity(), nfcAdapter);
@@ -61,13 +61,29 @@ public class NfcHandler {
 
     public void newIntent(Intent intent) {
         String action = intent.getAction();
-        if (this.isListening && NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+        if (this.isListening && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             handleNfcIntent(intent);
         }
     }
 	private void handleNfcIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+		
 		byte[] id = tag.getId();
+		NfcV nfcvTag = NfcV.get(tag);
+		if(nfcvTag!=null){
+			try {
+				nfcvTag.connect();
+				//{flags:0x00, read multiple blocks command: 0x23, start at block 0: 0x00, read 9 blocks (0 to 8): 0x08}
+				id = nfcvTag.transceive(new byte[] {(byte)0x00,(byte)0x23,(byte)0x00,(byte)0x08});
+			} catch (IOException e) {
+				Log.d("NFCService", nfcvTag.toString());
+			} finally {
+				try {
+					nfcvTag.close();
+				} catch (IOException e) {
+				}
+			}
+		}
 		
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, bytesToHex(id));
 		callbackContext.sendPluginResult(pluginResult);
@@ -83,7 +99,7 @@ public class NfcHandler {
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
         String[][] techList = new String[][]{
-			new String [] {NdefFormatable.class.getName(), NfcV.class.getName()}
+			new String [] {NfcV.class.getName()}
 			};
         try {
             filter.addDataType("*/*");
@@ -91,7 +107,7 @@ public class NfcHandler {
             throw new RuntimeException("ERROR", e);
         }
         IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, null, null);
+        adapter.enableForegroundDispatch(activity, pendingIntent, filter, techList);
     }
 
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
