@@ -147,7 +147,9 @@ public class NfcVHandler {
 		return ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
 	}
 	public void writeNfcV(Tag tag, int oldValue, int newValue) throws IOException {
-		if((oldValue != -1) && (oldValue != 0) && (readNfcV(tag) != oldValue)){
+		int currentValue = readNfcV(tag);
+		if(((oldValue != -1) && (oldValue != 0) && (currentValue != oldValue)) ||
+			(((oldValue == -1) || (oldValue == 0)) && ((currentValue == 0) || currentValue == -1)){
 			callbackContext.error(FALSE_TAG);
 			return;
 		}
