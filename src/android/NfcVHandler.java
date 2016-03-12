@@ -109,7 +109,7 @@ public class NfcVHandler {
 			this.isReading = false;
 		}else if (this.isWriting){
 			try{
-				writeNfcV(tag, message);
+				writeNfcV(tag, oldValue, newValue);
 			}catch(IOException e){
 				callbackContext.error("IOException");
 			}
@@ -146,7 +146,7 @@ public class NfcVHandler {
 		byte[] result = new byte[]{ id[1], id[2], id[3], id[4] };
 		return ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
 	}
-	public void writeNfcV(Tag tag, int id) throws IOException {
+	public void writeNfcV(Tag tag, int oldValue, int newValue) throws IOException {
 		if((oldValue != -1) && (oldValue != 0) && (readNfcV(tag) != oldValue)){
 			callbackContext.error(FALSE_TAG);
 			return;
