@@ -1,30 +1,46 @@
 # cordova-nfc-plugin
-This Plugin reads the ID of NFC-Tags.
+This Plugin reads and writes data of NfcV tags.
 
 Usage:
 ----------------------------------------------------
-####`nfc.addTechListener(function (win, fail));`
+####`nfc.addNfcVListener: function (success, error));`
 
-Adds a Listener for Tags with any Technology.
+Adds a Listener for NfcV-Tags
 
-win-Function returns Tag-ID
+success-Function returns Integer Data of block 50 (4 byte)
 
-fail-Function returns 
+error-Function returns 
     "NO_NFC" if NFC is not supported or
     "NFC_DISABLED" if NFC is not enabled
 	
-####`NfcTech.removeTechListener(function (win, fail));`
+####`nfc.removeNfcVListener: function (success, error));`
 
-win-Function returns "NFC_STOPPED"
+success-Function returns "READING_STOPPED"
 
-fail-Function returns Exception message
+error-Function returns Exception message
 
-####`NfcTech.isAvailable(function (win, fail));`
+####`nfc.addNfcVListener: function (id, success, error));`
+
+Writes int-id in the block 50 and returns it.
+
+success-Function returns Integer Data of block 50 (4 byte)
+
+error-Function returns 
+    "NO_NFC" if NFC is not supported or
+    "NFC_DISABLED" if NFC is not enabled
+
+####`nfc.removeNfcVWriter: function (success, error));`
+
+success-Function returns "WRITING_STOPPED"
+
+error-Function returns Exception message
+
+####`NfcTech.isAvailable: function (success, error));`
 
 Checks if NFC is available.
 
-win-Function returns "NFC_OK"
+success-Function returns "NFC_OK"
 
-fail-Function returns 
+error-Function returns 
     "NO_NFC" if NFC is not supported or
     "NFC_DISABLED" if NFC is not enabled

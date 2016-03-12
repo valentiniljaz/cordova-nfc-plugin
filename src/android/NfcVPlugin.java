@@ -10,24 +10,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import nfc.plugin.NfcHandler;
+import nfc.plugin.NfcVHandler;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public class NfcTagPlugin extends CordovaPlugin {
+public class NfcVPlugin extends CordovaPlugin {
     private static final String START_READING_NFCV = "startReadingNfcV";
     private static final String STOP_READING_NFCV = "stopReadingNfcV";
 	private static final String START_WRITING_NFCV = "startWritingNfcV";
     private static final String STOP_WRITING_NFCV = "stopWritingNfcV";
     private static final String CHECK_NFC_AVAILIBILITY = "checkNfc";
 	
-	private NfcHandler handler;
+	private NfcVHandler handler;
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		handler = new NfcHandler(this.cordova.getActivity(), callbackContext);
+		handler = new NfcVHandler(this.cordova.getActivity(), callbackContext);
 		if(action.equalsIgnoreCase(START_READING_NFCV)){
             handler.startReadingNfcV();
         } else if(action.equalsIgnoreCase(STOP_READING_NFCV)){

@@ -3,25 +3,25 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
            id="nfc.plugin.NfcTagPlugin"
       version="0.1.0">
-    <name>NfcTagPlugin</name>
-    <description>Cordova Nfc Plugin</description>
+    <name>NfcVPlugin</name>
+    <description>Cordova NfcV Plugin</description>
     <license>MIT</license>
-    <keywords>nfc, tagid</keywords>
+    <keywords>nfc, nfcv</keywords>
  
-    <js-module src="www/nfcplugin.js" name="nfc">
+    <js-module src="www/nfcvplugin.js" name="nfc">
         <clobbers target="nfc" />
     </js-module>
  
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="NfcTagPlugin">
-                <param name="android-package" value="nfc.plugin.NfcTagPlugin"/>
+            <feature name="NfcVPlugin">
+                <param name="android-package" value="nfc.plugin.NfcVPlugin"/>
 				<param name="onload" value="true" />
             </feature>
         </config-file>
  
-        <source-file src="src/android/NfcTagPlugin.java" target-dir="src/nfc/plugin" />      
-		<source-file src="src/android/NfcHandler.java" target-dir="src/nfc/plugin" />   
+        <source-file src="src/android/NfcVPlugin.java" target-dir="src/nfc/plugin" />      
+		<source-file src="src/android/NfcVHandler.java" target-dir="src/nfc/plugin" />   
      </platform>          
 </plugin>
