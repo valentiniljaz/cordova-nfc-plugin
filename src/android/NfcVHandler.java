@@ -149,7 +149,7 @@ public class NfcVHandler {
 	public void writeNfcV(Tag tag, int oldValue, int newValue) throws IOException {
 		int currentValue = readNfcV(tag);
 		if(((oldValue != -1) && (oldValue != 0) && (currentValue != oldValue)) ||
-			(((oldValue == -1) || (oldValue == 0)) && ((currentValue == 0) || currentValue == -1))){
+			(((oldValue == -1) || (oldValue == 0)) && ((currentValue != 0) || currentValue != -1))){
 			callbackContext.error(FALSE_TAG);
 			return;
 		}
