@@ -144,7 +144,7 @@ public class NfcVHandler {
 		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, resultInt);
 		callbackContext.sendPluginResult(pluginResult);
 	}
-	public void writeNfcV(Tag tag, int id) throws IOException{
+	public void writeNfcV(Tag tag, int id) throws IOException {
 		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		if (tag == null) {
 			callbackContext.error("NULL");
@@ -165,7 +165,6 @@ public class NfcVHandler {
 		arrByte[6] = (byte) data[3];
 		try {
 			nfcv.transceive(arrByte);
-			readNfcV(tag);
 			} catch (IOException e) {
 			if (e.getMessage().equals("Tag was lost.")) {
 				// continue, because of Tag bug
@@ -173,8 +172,9 @@ public class NfcVHandler {
 				callbackContext.error("Couldn't write on Tag");
 				throw e;
 			}
-			}
+		}
 		nfcv.close();
+		readNfcV(tag);
 	}
 	
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
