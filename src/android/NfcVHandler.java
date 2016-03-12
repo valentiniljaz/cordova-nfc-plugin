@@ -27,12 +27,13 @@ public class NfcVHandler {
     private static final String STATUS_NFC_DISABLED = "NFC_DISABLED";
     private static final String STATUS_READING_STOPPED = "READING_STOPPED";
 	private static final String STATUS_WRITING_STOPPED = "WRITING_STOPPED";
+	private static final String FALSE_TAG = "FALSE_TAG";
 
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
     private boolean isReading, isWriting;
-	private int message;
+	private int oldValue, newValue;
 
     public NfcVHandler(Activity activity, final CallbackContext callbackContext){
         this.activity = activity;
@@ -70,7 +71,7 @@ public class NfcVHandler {
 			callbackContext.error(e.getMessage());
 		}
     }
-	public void startWritingNfcV(int message){
+	public void startWritingNfcV(int oldValue, int newValue){
 		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 		if (nfcAdapter == null) {
 			callbackContext.error(STATUS_NO_NFC);
@@ -79,7 +80,8 @@ public class NfcVHandler {
         }else {
 			this.isWriting = true;
 			this.isReading = false;
-			this.message = message;
+			this.oldValue = oldValue;
+			this.newValue = newValue;
 			setupForegroundDispatch(getActivity(), nfcAdapter);
         }
 	}
@@ -101,7 +103,9 @@ public class NfcVHandler {
 	private void handleNfcVIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (this.isReading){
-			readNfcV(tag);
+			int result = readNfcV(tag);
+			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+			callbackContext.sendPluginResult(pluginResult);
 			this.isReading = false;
 		}else if (this.isWriting){
 			try{
@@ -114,7 +118,7 @@ public class NfcVHandler {
 		
 		//stopForegroundDispatch(getActivity(), nfcAdapter);
 	}
-	public void readNfcV (Tag tag) {
+	public int readNfcV (Tag tag) {
 		if (tag == null) {
 			callbackContext.error("NULL");
 		}
@@ -125,7 +129,7 @@ public class NfcVHandler {
 				nfcv.connect();
 				byte[] cmd = new byte[]{
 						(byte)0x00,                  // flag
-						(byte)0x20,                  // command: READ ONE BLOCK
+						(byte)0x20,                  // command: READ ONE BLOCK -1=schreiben, 0=schreiben, rV = schreiben,
 						(byte)block					 // IMMER im gleichen Block
 				};
 				id = nfcv.transceive(cmd);
@@ -140,11 +144,13 @@ public class NfcVHandler {
 		}
 		// erster block = flag
 		byte[] result = new byte[]{ id[1], id[2], id[3], id[4] };
-		int resultInt = ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, resultInt);
-		callbackContext.sendPluginResult(pluginResult);
+		return ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
 	}
 	public void writeNfcV(Tag tag, int id) throws IOException {
+		if((oldValue != -1) && (oldValue != 0) && (readNfcV(tag) != oldValue)){
+			callbackContext.error(FALSE_TAG);
+			return;
+		}
 		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
 		if (tag == null) {
 			callbackContext.error("NULL");

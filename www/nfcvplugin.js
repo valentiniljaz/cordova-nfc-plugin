@@ -5,8 +5,8 @@ var nfc = {
 	removeNfcVListener: function (success, error) {
         cordova.exec(success, error, "NfcVPlugin", "stopReadingNfcV", []);
     },
-	addNfcVWriter: function (id, success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "startWritingNfcV", [id]);
+	addNfcVWriter: function (oldValue, newValue, success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "startWritingNfcV", [oldValue, newValue]);
     },
 	removeNfcVWriter: function (success, error) {
         cordova.exec(success, error, "NfcVPlugin", "stopWritingNfcV", []);
