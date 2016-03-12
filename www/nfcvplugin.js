@@ -1,18 +1,18 @@
 var nfc = {
 	addNfcVListener: function (success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "startReadingNfcV", []);
+        cordova.exec(success, error, "NfcVPlugin", "startReadingNfcV", []);
     },
 	removeNfcVListener: function (success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "stopReadingNfcV", []);
+        cordova.exec(success, error, "NfcVPlugin", "stopReadingNfcV", []);
     },
 	addNfcVWriter: function (id, success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "startWritingNfcV", [id]);
+        cordova.exec(success, error, "NfcVPlugin", "startWritingNfcV", [id]);
     },
 	removeNfcVWriter: function (success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "stopWritingNfcV", []);
+        cordova.exec(success, error, "NfcVPlugin", "stopWritingNfcV", []);
     },
 	isAvailable: function (success, error) {
-        cordova.exec(success, error, "NfcTagPlugin", "checkNfc", []);
+        cordova.exec(success, error, "NfcVPlugin", "checkNfc", []);
     }
 }
 module.exports = nfc;
