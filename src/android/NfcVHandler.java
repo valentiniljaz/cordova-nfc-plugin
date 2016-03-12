@@ -129,7 +129,7 @@ public class NfcVHandler {
 				nfcv.connect();
 				byte[] cmd = new byte[]{
 						(byte)0x00,                  // flag
-						(byte)0x20,                  // command: READ ONE BLOCK -1=schreiben, 0=schreiben, rV = schreiben,
+						(byte)0x20,                  // command: READ ONE BLOCK
 						(byte)block					 // IMMER im gleichen Block
 				};
 				id = nfcv.transceive(cmd);
@@ -180,7 +180,9 @@ public class NfcVHandler {
 			}
 		}
 		nfcv.close();
-		readNfcV(tag);
+		int result = readNfcV(tag);
+		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+		callbackContext.sendPluginResult(pluginResult);
 	}
 	
     public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
