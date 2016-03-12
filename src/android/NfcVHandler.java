@@ -151,7 +151,7 @@ public class NfcVHandler {
 			callbackContext.error(FALSE_TAG);
 			return;
 		}
-		byte[] data = ByteBuffer.allocate(4).putInt(id).array();
+		byte[] data = ByteBuffer.allocate(4).putInt(newValue).array();
 		if (tag == null) {
 			callbackContext.error("NULL");
 			return;
