@@ -122,7 +122,7 @@ public class NfcVHandler {
 		if (tag == null) {
 			callbackContext.error("NULL");
 		}
-		byte[] response;
+		byte[] response = new byte[4];
 		NfcV nfcv = NfcV.get(tag);
 		if(nfcv != null){
 			try {
