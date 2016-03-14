@@ -174,7 +174,7 @@ public class NfcVHandler {
 		try {
 			byte [] response = nfcv.transceive(request);
 			if(response[0] != (byte)0x00){
-				callbackContext.error("Error code: " + response[0]);
+				callbackContext.error("Error code: " + response[1]);
 			}
 			} catch (IOException e) {
 			if (e.getMessage().equals("Tag was lost.")) {
