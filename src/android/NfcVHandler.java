@@ -122,17 +122,17 @@ public class NfcVHandler {
 		if (tag == null) {
 			callbackContext.error("NULL");
 		}
-		byte[] id = tag.getId();
+		byte[] response;
 		NfcV nfcv = NfcV.get(tag);
 		if(nfcv != null){
 			try {
 				nfcv.connect();
-				byte[] cmd = new byte[]{
+				byte[] request = new byte[]{
 						(byte)0x00,                  // flag
 						(byte)0x20,                  // command: READ ONE BLOCK
 						(byte)block					 // IMMER im gleichen Block
 				};
-				id = nfcv.transceive(cmd);
+				response = nfcv.transceive(request);
 			} catch (IOException e) {
 				callbackContext.error(nfcv.toString());
 			} finally {
@@ -142,9 +142,9 @@ public class NfcVHandler {
 				}
 			}
 		}
-		// erster block = flag
-		byte[] result = new byte[]{ id[1], id[2], id[3], id[4] };
-		return ByteBuffer.wrap(result).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
+		// 1. Byte: Block locking status
+		byte[] value = new byte[]{ response[1], response[2], response[3], response[4] };
+		return ByteBuffer.wrap(value).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
 	}
 	public void writeNfcV(Tag tag, int oldValue, int newValue) throws IOException {
 		int currentValue = readNfcV(tag);
@@ -162,17 +162,20 @@ public class NfcVHandler {
 
 		nfcv.connect();
 		
-		byte[] arrByte = new byte[7];
-		arrByte[0] = 0x00;			// flag
-		arrByte[1] = 0x21;			// command: WRITE ONE BLOCK
-		arrByte[2] = (byte) block; 	// IMMER im gleichen Block speichern
+		byte[] request = new byte[7];
+		request[0] = 0x00;			// flag
+		request[1] = 0x21;			// command: WRITE ONE BLOCK
+		request[2] = (byte) block; 	// IMMER im gleichen Block speichern
 		
-		arrByte[3] = (byte) data[0];
-		arrByte[4] = (byte) data[1];
-		arrByte[5] = (byte) data[2];
-		arrByte[6] = (byte) data[3];
+		request[3] = (byte) data[0];
+		request[4] = (byte) data[1];
+		request[5] = (byte) data[2];
+		request[6] = (byte) data[3];
 		try {
-			nfcv.transceive(arrByte);
+			byte [] response = nfcv.transceive(request);
+			if(response[0] != (byte)0x00){
+				callbackContext.error(response[0] + "");
+			}
 			} catch (IOException e) {
 			if (e.getMessage().equals("Tag was lost.")) {
 				// continue, because of Tag bug
