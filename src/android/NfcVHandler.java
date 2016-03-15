@@ -103,22 +103,28 @@ public class NfcVHandler {
 	private void handleNfcVIntent(Intent intent) {
 		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (this.isReading){
-			int result = readNfcV(tag);
-			PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
-			callbackContext.sendPluginResult(pluginResult);
-			this.isReading = false;
+			try{
+				int result = readNfcV(tag);
+				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+				callbackContext.sendPluginResult(pluginResult);
+			}catch(Exception e){
+				callbackContext.error(e.getMessage());
+			} finally {
+				this.isReading = false;
+			}
 		}else if (this.isWriting){
 			try{
 				writeNfcV(tag, oldValue, newValue);
-			}catch(IOException e){
-				callbackContext.error("IOException");
+			}catch(Exception e){
+				callbackContext.error(e.getMessage());
+			} finally {
+				this.isWriting = false;
 			}
-			this.isWriting = false;
 		}
 		
 		//stopForegroundDispatch(getActivity(), nfcAdapter);
 	}
-	public int readNfcV (Tag tag) {
+	public int readNfcV (Tag tag) throws Exception{
 		if (tag == null) {
 			callbackContext.error("NULL");
 		}
@@ -146,13 +152,14 @@ public class NfcVHandler {
 		byte[] value = new byte[]{ response[1], response[2], response[3], response[4] };
 		return ByteBuffer.wrap(value).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
 	}
-	public void writeNfcV(Tag tag, int oldValue, int newValue) throws IOException {
+	public void writeNfcV(Tag tag, int oldValue, int newValue) throws Exception {
 		int currentValue = readNfcV(tag);
 		if(((oldValue != -1) && (oldValue != 0) && (currentValue != oldValue)) ||
 			(((oldValue == -1) || (oldValue == 0)) && ((currentValue != 0) && currentValue != -1))){
 			callbackContext.error(FALSE_TAG);
 			return;
 		}
+		try{
 		byte[] data = ByteBuffer.allocate(4).putInt(newValue).array();
 		if (tag == null) {
 			callbackContext.error("NULL");
