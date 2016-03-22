@@ -35,7 +35,7 @@ success-Function returns "WRITING_STOPPED"
 
 error-Function returns Exception message
 
-####`NfcTech.isAvailable: function (success, error));`
+####`nfc.isAvailable: function (success, error));`
 
 Checks if NFC is available.
 
