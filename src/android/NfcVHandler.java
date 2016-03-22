@@ -20,7 +20,7 @@ import android.widget.Toast;
 https://books.google.at/books?id=c4QRU17e494C&pg=SA2-PA147&lpg=SA2-PA147&dq=read+and+write+nfcv&source=bl&ots=V9C-4JZR8N&sig=gjhjDZFGjewd05RQNsp-6zhZFvI&hl=de&sa=X&ved=0ahUKEwjDhYzJ1rnLAhWCVywKHVt3AaUQ6AEIZjAJ#v=onepage&q=read%20and%20write%20nfcv&f=false
 */
 public class NfcVHandler {
-	private static final int block = 1;
+	private static final int block = 20;
 	
     private static final String STATUS_NFC_OK = "NFC_OK";
     private static final String STATUS_NO_NFC = "NO_NFC";
