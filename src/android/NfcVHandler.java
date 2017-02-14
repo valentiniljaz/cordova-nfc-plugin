@@ -16,222 +16,257 @@ import android.nfc.NfcAdapter;
 import android.nfc.tech.*;
 import android.nfc.Tag;
 import android.widget.Toast;
-/*
-https://books.google.at/books?id=c4QRU17e494C&pg=SA2-PA147&lpg=SA2-PA147&dq=read+and+write+nfcv&source=bl&ots=V9C-4JZR8N&sig=gjhjDZFGjewd05RQNsp-6zhZFvI&hl=de&sa=X&ved=0ahUKEwjDhYzJ1rnLAhWCVywKHVt3AaUQ6AEIZjAJ#v=onepage&q=read%20and%20write%20nfcv&f=false
-*/
+import android.util.Log;
+
+import org.json.JSONObject;
+import java.util.*;
+
 public class NfcVHandler {
-	private static final int block = 20;
-	
-    private static final String STATUS_NFC_OK = "NFC_OK";
-    private static final String STATUS_NO_NFC = "NO_NFC";
-    private static final String STATUS_NFC_DISABLED = "NFC_DISABLED";
-    private static final String STATUS_READING_STOPPED = "READING_STOPPED";
-	private static final String STATUS_WRITING_STOPPED = "WRITING_STOPPED";
-	private static final String FALSE_TAG = "FALSE_TAG";
+
+	public static final String NFC_OK = "NFC_OK";
+	public static final String NFC_INIT_OK = "NFC_INIT_OK";
+	public static final String NFC_CHECK_OK = "NFC_CHECK_OK";
+	private static final String NFC_INTENT_ACTIVE = "NFC_INTENT_ACTIVE";
+	private static final String NFC_STOP = "NFC_STOP";
+	private static final String E_NO_NFC = "E_NO_NFC";
+	private static final String E_NFC_DISABLED = "E_NFC_DISABLED";
+	private static final String E_NULL_TAG = "E_NULL_TAG";
+	private static final String E_ADDR_TOO_LONG = "E_ADDR_TOO_LONG";
 
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
-    private boolean isReading, isWriting;
-	private int oldValue, newValue;
 
-    public NfcVHandler(Activity activity, final CallbackContext callbackContext){
+	private PendingIntent foregroundPendingIntent;
+	private IntentFilter[] foregroundFilters;
+	private Intent newIntent;
+
+    public NfcVHandler(Activity activity) {
         this.activity = activity;
-        this.callbackContext = callbackContext;
+
+        this.getNfcAdapter();
+        this.setupForegroundDispatch(this.activity);
     }
 
-    public void checkNfcAvailibility(){
-		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if (nfcAdapter == null) {
-			callbackContext.error(STATUS_NO_NFC);
-		}else if (!nfcAdapter.isEnabled()){
-			callbackContext.error(STATUS_NFC_DISABLED);
-        }else {
-			callbackContext.success(STATUS_NFC_OK);
-        }
-	}
-    public void startReadingNfcV(){
-		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if (nfcAdapter == null) {
-			callbackContext.error(STATUS_NO_NFC);
-		}else if (!nfcAdapter.isEnabled()){
-			callbackContext.error(STATUS_NFC_DISABLED);
-        }else {
-			this.isReading = true;
-			this.isWriting = false;
-			setupForegroundDispatch(getActivity(), nfcAdapter);
+    private void getNfcAdapter() {
+    	this.nfcAdapter = NfcAdapter.getDefaultAdapter(this.getActivity());
+    }
+
+    public void setCallbackContext(CallbackContext callbackContext) {
+    	this.callbackContext = callbackContext;
+    }
+
+    public String checkNfcAdapter() {
+		if (this.nfcAdapter == null) {
+			return E_NO_NFC;
+		} else if (!this.nfcAdapter.isEnabled()) {
+			return E_NFC_DISABLED;
+        } else {
+			return NFC_OK;
         }
     }
-    public void stopReadingNfcV(){
-		try{
-			this.isReading = false;
-			stopForegroundDispatch(getActivity(), nfcAdapter);
-			callbackContext.success(STATUS_READING_STOPPED);
-		}catch(IllegalStateException e){
-			callbackContext.error(e.getMessage());
-		}
-    }
-	public void startWritingNfcV(int oldValue, int newValue){
-		nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-		if (nfcAdapter == null) {
-			callbackContext.error(STATUS_NO_NFC);
-		}else if (!nfcAdapter.isEnabled()){
-			callbackContext.error(STATUS_NFC_DISABLED);
-        }else {
-			this.isWriting = true;
-			this.isReading = false;
-			this.oldValue = oldValue;
-			this.newValue = newValue;
-			setupForegroundDispatch(getActivity(), nfcAdapter);
-        }
-	}
-	public void stopWritingNfcV(){
-		try{
-			this.isWriting = false;
-			stopForegroundDispatch(getActivity(), nfcAdapter);
-			callbackContext.success(STATUS_WRITING_STOPPED);
-		}catch(IllegalStateException e){
-			callbackContext.error(e.getMessage());
-		}
-    }
+
     public void newIntent(Intent intent) {
-        String action = intent.getAction();
-        if ((this.isReading || this.isWriting) && NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
-            handleNfcVIntent(intent);
+        this.newIntent = intent;
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+            this.callbackContext.success(NFC_INTENT_ACTIVE);
         }
     }
-	private void handleNfcVIntent(Intent intent) {
-		Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		if (this.isReading){
-			try{
-				int result = readNfcV(tag);
-				PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
-				callbackContext.sendPluginResult(pluginResult);
-			}catch(Exception e){
-				callbackContext.error(e.getMessage());
-			} finally {
-				this.isReading = false;
-			}
-		}else if (this.isWriting){
-			try{
-				writeNfcV(tag, oldValue, newValue);
-			}catch(Exception e){
-				callbackContext.error(e.getMessage());
-			} finally {
-				this.isWriting = false;
-			}
-		}
-		
-		//stopForegroundDispatch(getActivity(), nfcAdapter);
+
+    /* Cordova methods */
+
+    public void init() {
+		this.callbackContext.success(NFC_INIT_OK);
 	}
-	public int readNfcV (Tag tag) throws Exception{
+
+    public void checkNfcVAvailibility() {
+		this.callbackContext.success(NFC_CHECK_OK);
+	}
+
+    public void startListening() {
+    	String[][] foregroundTechList = new String[][]{
+			new String [] { NfcV.class.getName() }
+		};
+    	this.nfcAdapter.enableForegroundDispatch(this.getActivity(), this.foregroundPendingIntent, this.foregroundFilters, foregroundTechList);
+    }
+
+    public void stopListening() {
+    	this.stopForegroundDispatch(this.getActivity(), this.nfcAdapter);
+    	this.callbackContext.success(NFC_STOP);
+    }
+
+    public void readBlock(JSONObject blockAddr) throws Exception {
+    	byte[] readBlockAddr = this.argToBytes(blockAddr);
+
+    	byte[] result = this.readNfcVBlock(readBlockAddr);
+
+    	PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+		this.callbackContext.sendPluginResult(pluginResult);
+    }
+
+    public void writeBlock(JSONObject blockAddr, JSONObject blockData) throws Exception {
+    	byte[] writeBlockAddr = this.argToBytes(blockAddr);
+    	byte[] writeBlockData = this.argToBytes(blockData);
+
+    	byte[] result = this.writeNfcVBlock(writeBlockAddr, writeBlockData);
+
+    	PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+		this.callbackContext.sendPluginResult(pluginResult);
+    }
+
+	/* Private methods */
+
+	private byte[] readNfcVBlock(byte[] readBlock) throws Exception {
+		Tag tag = this.newIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (tag == null) {
-			callbackContext.error("NULL");
+			throw new Exception(E_NULL_TAG);
 		}
-		byte[] response = new byte[4];
+
+		// Prepare request
+		byte[] request = new byte[2 + readBlock.length];
+		request[0] = this.getBlockAddrCode(readBlock);
+		request[1] = (byte)0x20;
+		for (int i = 0; i < readBlock.length; i++) {
+			request[2 + i] = readBlock[i];
+		}
+
+		byte[] response = new byte[1];
 		NfcV nfcv = NfcV.get(tag);
-		if(nfcv != null){
+	
+		if (nfcv != null) {
 			try {
 				nfcv.connect();
-				byte[] request = new byte[]{
-						(byte)0x00,                  // flag
-						(byte)0x20,                  // command: READ ONE BLOCK
-						(byte)block					 // IMMER im gleichen Block
-				};
 				response = nfcv.transceive(request);
 			} catch (IOException e) {
-				callbackContext.error(nfcv.toString());
+				throw e;
 			} finally {
 				try {
 					nfcv.close();
-				} catch (IOException e) {
-				}
+				} catch (IOException e) {}
 			}
 		}
-		// 1. Byte: Block locking status
-		byte[] value = new byte[]{ response[1], response[2], response[3], response[4] };
-		return ByteBuffer.wrap(value).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
+
+		return response;
 	}
-	public void writeNfcV(Tag tag, int oldValue, int newValue) throws Exception {
-		int currentValue = readNfcV(tag);
-		if(((oldValue != -1) && (oldValue != 0) && (currentValue != oldValue)) ||
-			(((oldValue == -1) || (oldValue == 0)) && ((currentValue != 0) && currentValue != -1))){
-			callbackContext.error(FALSE_TAG);
-			return;
-		}
-		byte[] data = ByteBuffer.allocate(4).putInt(newValue).array();
+
+	private byte[] writeNfcVBlock(byte[] writeBlock, byte[] writeData) throws Exception {
+		Tag tag = this.newIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (tag == null) {
-			callbackContext.error("NULL");
-			return;
+			throw new Exception(E_NULL_TAG);
 		}
-		NfcV nfcv = NfcV.get(tag);
+		
+		// Prepare request
+		byte[] request = new byte[2 + writeBlock.length + writeData.length];
+		request[0] = this.getBlockAddrCode(writeBlock);
+		request[1] = (byte)0x21;
+		for (int i = 0; i < writeBlock.length; i++) {
+			request[2 + i] = writeBlock[i];
+		}
+		for (int i = 0; i < writeData.length; i++) {
+			request[2 + writeBlock.length + i] = writeData[i];
+		}
 
-		nfcv.connect();
-		
-		byte[] request = new byte[7];
-		request[0] = 0x00;			// flag
-		request[1] = 0x21;			// command: WRITE ONE BLOCK
-		request[2] = (byte) block; 	// IMMER im gleichen Block speichern
-		
-		request[3] = (byte) data[0];
-		request[4] = (byte) data[1];
-		request[5] = (byte) data[2];
-		request[6] = (byte) data[3];
-		try {
-			byte [] response = nfcv.transceive(request);
-			if(response[0] != (byte)0x00){
-				callbackContext.error("Error code: " + response[1]);
-			}
+        byte [] response = new byte[1];
+        NfcV nfcv = NfcV.get(tag);
+
+        if (nfcv != null) {
+			try {
+				nfcv.connect();
+				response = nfcv.transceive(request);
+				if (response[0] != (byte)0x00){
+					throw new Exception("E_RESPONSE_CODE - " + response[0]);
+				}
 			} catch (IOException e) {
-			if (e.getMessage().equals("Tag was lost.")) {
-				// continue, because of Tag bug
-			} else {
-				callbackContext.error("Couldn't write on Tag");
-				throw e;
+				if (e.getMessage().equals("Tag was lost.")) {
+					// Continue, because of Tag bug
+				} else {
+					throw e;
+				}
+			} finally {
+				try {
+					nfcv.close();
+				} catch (IOException e) {}
 			}
 		}
-		nfcv.close();
-		int result = readNfcV(tag);
-		PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
-		callbackContext.sendPluginResult(pluginResult);
-	}
-	
-    public static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
-        final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        final PendingIntent pendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, intent, 0);
+		return response;
+	}
+
+	private void setupForegroundDispatch(Activity activity) {
+        Intent foregroundIntent = new Intent(activity.getApplicationContext(), activity.getClass());
+        foregroundIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        this.foregroundPendingIntent = PendingIntent.getActivity(activity.getApplicationContext(), 0, foregroundIntent, 0);
 
         IntentFilter filter = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
-        String[][] techList = new String[][]{
-			new String [] {NfcV.class.getName()}
-			};
         try {
             filter.addDataType("*/*");
-        }catch (IntentFilter.MalformedMimeTypeException e){
-            throw new RuntimeException("ERROR", e);
+        } catch (IntentFilter.MalformedMimeTypeException e) {
+            throw new RuntimeException("E_FILTER", e);
         }
-        IntentFilter[] filters = new IntentFilter[]{filter};
-        adapter.enableForegroundDispatch(activity, pendingIntent, filters, techList);
+        this.foregroundFilters = new IntentFilter[]{ filter };
     }
 
-    public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
+    private void stopForegroundDispatch(Activity activity, NfcAdapter adapter) {
         adapter.disableForegroundDispatch(activity);
     }
-    public static String bytesToHex(byte[] bytes){
+
+	private Activity getActivity() { 
+		return this.activity; 
+	}
+
+    private Intent getIntent() {
+        return this.activity.getIntent();
+    }
+
+    private byte getBlockAddrCode(byte[] blockAddr) throws Exception {
+    	if (blockAddr.length == 1) {
+    		return (byte)0x02;
+    	} else if (blockAddr.length == 2) {
+    		return (byte)0x0A;
+    	} else {
+    		throw new Exception(E_ADDR_TOO_LONG);
+    	}
+    }
+	
+    private static String bytesToHex(byte[] bytes){
         final char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
         char[] hexChars = new char[bytes.length * 2];
         int v;
-        for(int j=0; j<bytes.length; j++){
+
+        for (int j = 0; j < bytes.length; j++) {
             v = bytes[j] & 0xFF;
             hexChars[j*2] = hexArray[v >>> 4];
             hexChars[j*2 + 1] = hexArray[v & 0x0F];
         }
+
         return new String(hexChars);
     }
-    private Activity getActivity() { return this.activity; }
 
-    private Intent getIntent() {
-        return this.activity.getIntent();
+    private byte[] argToBytes(JSONObject blockAddr) {
+    	byte[] readBlock = new byte[1];
+
+    	List<Byte> argsBytes = new ArrayList<Byte>();
+    	Iterator<String> keys;
+    	String key;
+    	Byte[] readBytes;
+
+    	try {
+			keys = blockAddr.keys();
+			while ( keys.hasNext() ) {
+			    key = (String)keys.next();
+			    argsBytes.add((byte)blockAddr.getInt(key));
+			}
+
+			readBytes = argsBytes.toArray(new Byte[argsBytes.size()]);
+			readBlock = new byte[readBytes.length];
+			for(int i = 0; i < readBytes.length; i++) {
+				readBlock[i] = readBytes[i].byteValue();
+			}
+		} catch (Exception e) {
+			callbackContext.error(e.getMessage());
+		}
+
+		return readBlock;
     }
 }

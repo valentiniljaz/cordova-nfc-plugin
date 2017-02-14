@@ -11,42 +11,77 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import nfc.plugin.NfcVHandler;
-
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.IntentFilter;
 
 public class NfcVPlugin extends CordovaPlugin {
-    private static final String START_READING_NFCV = "startReadingNfcV";
-    private static final String STOP_READING_NFCV = "stopReadingNfcV";
-	private static final String START_WRITING_NFCV = "startWritingNfcV";
-    private static final String STOP_WRITING_NFCV = "stopWritingNfcV";
-    private static final String CHECK_NFC_AVAILIBILITY = "checkNfc";
-	
-	private NfcVHandler handler;
+
+    private static final String FUNC_INIT = "init";
+    private static final String FUNC_CHECK_NFCV_AVAILABILITY = "checkNfcVAvailability";
+    private static final String FUNC_START_LISTENING = "startListening";
+    private static final String FUNC_STOP_LISTENING = "stopListening";
+    private static final String FUNC_READ_BLOCK = "readBlock";
+    private static final String FUNC_WRITE_BLOCK = "writeBlock";
+    
+    private boolean pluginInit = false;
+    private NfcVHandler handler;
+    private Activity activity;
+
+    private void initPlugin() {
+        if (!this.pluginInit) {
+            this.activity = this.cordova.getActivity();
+            this.handler = new NfcVHandler(this.activity);
+            this.pluginInit = true;
+        }
+    }
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		handler = new NfcVHandler(this.cordova.getActivity(), callbackContext);
-		if(action.equalsIgnoreCase(START_READING_NFCV)){
-            handler.startReadingNfcV();
-        } else if(action.equalsIgnoreCase(STOP_READING_NFCV)){
-            handler.stopReadingNfcV();
-        } else if(action.equalsIgnoreCase(CHECK_NFC_AVAILIBILITY)){
-			handler.checkNfcAvailibility();
-		} else if(action.equalsIgnoreCase(START_WRITING_NFCV)){
-			handler.startWritingNfcV(args.getInt(0), args.getInt(1));
-		} else if(action.equalsIgnoreCase(STOP_WRITING_NFCV)){
-			handler.stopWritingNfcV();
-		}else {
-            // invalid action
-            return false;
+        this.initPlugin();
+        boolean result = true;
+        String checkNfc = this.handler.checkNfcAdapter();
+
+        if (checkNfc.equalsIgnoreCase(NfcVHandler.NFC_OK)) {
+            this.handler.setCallbackContext(callbackContext);
+
+            try {
+                if (action.equalsIgnoreCase(FUNC_INIT)) {
+                    this.handler.init();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_CHECK_NFCV_AVAILABILITY)) {
+                    this.handler.checkNfcVAvailibility();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_START_LISTENING)) {
+                    this.handler.startListening();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_STOP_LISTENING)) {
+                    this.handler.stopListening();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_READ_BLOCK)) {
+                    this.handler.readBlock(args.getJSONObject(0));
+                } 
+                else if (action.equalsIgnoreCase(FUNC_WRITE_BLOCK)) {
+                    this.handler.writeBlock(args.getJSONObject(0), args.getJSONObject(1));
+                } 
+                else {
+                    callbackContext.error("INVALID_ACTION: " + action);
+                    result = false;
+                }
+            } catch(Exception e) {
+                callbackContext.error("NFC_ERROR: " + e.getMessage());
+                result = false;
+            }
+
+        } else {
+            callbackContext.error(checkNfc);
+            result = false;
         }
-        return true;
+
+        return result;
     }
-	
-	@Override
+    
+    @Override
     public void onNewIntent(Intent intent) {
-		handler.newIntent(intent);
+        this.handler.newIntent(intent);
     }
 }

@@ -1,18 +1,23 @@
-var nfc = {
-	addNfcVListener: function (success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "startReadingNfcV", []);
+cordova.define("nfc.plugin.NfcVPlugin.nfc", function(require, exports, module) {
+var NfcV = {
+    init: function(success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "init", []);
     },
-	removeNfcVListener: function (success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "stopReadingNfcV", []);
+    checkNfcVAvailability: function(success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "checkNfcVAvailability", []);
     },
-	addNfcVWriter: function (oldValue, newValue, success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "startWritingNfcV", [oldValue, newValue]);
+    startListening: function(success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "startListening", []);
     },
-	removeNfcVWriter: function (success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "stopWritingNfcV", []);
+    stopListening: function(success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "stopListening", []);
     },
-	isAvailable: function (success, error) {
-        cordova.exec(success, error, "NfcVPlugin", "checkNfc", []);
+    readBlock: function(blockAddr, success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "readBlock", [blockAddr]);
+    },
+    writeBlock: function(blockAddr, blockData, success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "writeBlock", [blockAddr, blockData]);
     }
 }
-module.exports = nfc;
+module.exports = NfcV;
+});
