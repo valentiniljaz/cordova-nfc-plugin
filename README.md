@@ -49,7 +49,7 @@ Reads one block from `blockAddr`.
 
 Writes `blockData` into one block at `blockAddr`.
 
-* success - It returns bytes from response
+* success - It returns bytes from write response
 * error - Check error flags below
 
 
