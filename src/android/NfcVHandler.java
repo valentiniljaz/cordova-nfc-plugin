@@ -143,7 +143,11 @@ public class NfcVHandler {
 				nfcv.connect();
 				response = nfcv.transceive(request);
 			} catch (IOException e) {
-				throw e;
+				if (e.getMessage().equals("Tag was lost.")) {
+                    // Continue, because of Tag bug
+                } else {
+                    throw e;
+                }
 			} finally {
 				try {
 					nfcv.close();
