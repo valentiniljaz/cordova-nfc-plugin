@@ -33,6 +33,11 @@ public class NfcVHandler {
 	private static final String E_NULL_TAG = "E_NULL_TAG";
 	private static final String E_ADDR_TOO_LONG = "E_ADDR_TOO_LONG";
 
+	private static final byte CMD_READ = (byte)0x20;
+	private static final byte CMD_WRITE = (byte)0x21;
+	private static final byte FLAGS_DATA_RATE = (byte)0x02;
+	private static final byte FLAGS_DATA_RATE_AND_PROTOCOL_EXT = (byte)0x0A;
+
     private NfcAdapter nfcAdapter;
     private Activity activity;
 	private CallbackContext callbackContext;
@@ -114,20 +119,20 @@ public class NfcVHandler {
 		this.callbackContext.sendPluginResult(pluginResult);
     }
 
+    public void transceive(JSONObject jsonRequest) throws Exception {
+    	byte[] request = this.argToBytes(jsonRequest);
+    	byte[] result = this.transceiveNfcV(request);
+
+    	PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, result);
+		this.callbackContext.sendPluginResult(pluginResult);
+    }
+
 	/* Private methods */
 
-	private byte[] readNfcVBlock(byte[] readBlock) throws Exception {
+	private byte[] transceiveNfcV(byte[] request) throws Exception {
 		Tag tag = this.newIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		if (tag == null) {
 			throw new Exception(E_NULL_TAG);
-		}
-
-		// Prepare request
-		byte[] request = new byte[2 + readBlock.length];
-		request[0] = this.getBlockAddrCode(readBlock);
-		request[1] = (byte)0x20;
-		for (int i = 0; i < readBlock.length; i++) {
-			request[2 + i] = readBlock[i];
 		}
 
 		byte[] response = new byte[1];
@@ -149,16 +154,23 @@ public class NfcVHandler {
 		return response;
 	}
 
-	private byte[] writeNfcVBlock(byte[] writeBlock, byte[] writeData) throws Exception {
-		Tag tag = this.newIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		if (tag == null) {
-			throw new Exception(E_NULL_TAG);
+	private byte[] readNfcVBlock(byte[] readBlock) throws Exception {
+		// Prepare request
+		byte[] request = new byte[2 + readBlock.length];
+		request[0] = this.getRequestFlags(readBlock);
+		request[1] = CMD_READ;
+		for (int i = 0; i < readBlock.length; i++) {
+			request[2 + i] = readBlock[i];
 		}
-		
+
+		return this.transceiveNfcV(request);
+	}
+
+	private byte[] writeNfcVBlock(byte[] writeBlock, byte[] writeData) throws Exception {
 		// Prepare request
 		byte[] request = new byte[2 + writeBlock.length + writeData.length];
-		request[0] = this.getBlockAddrCode(writeBlock);
-		request[1] = (byte)0x21;
+		request[0] = this.getRequestFlags(writeBlock);
+		request[1] = CMD_WRITE;
 		for (int i = 0; i < writeBlock.length; i++) {
 			request[2 + i] = writeBlock[i];
 		}
@@ -166,30 +178,7 @@ public class NfcVHandler {
 			request[2 + writeBlock.length + i] = writeData[i];
 		}
 
-        byte [] response = new byte[1];
-        NfcV nfcv = NfcV.get(tag);
-
-        if (nfcv != null) {
-			try {
-				nfcv.connect();
-				response = nfcv.transceive(request);
-				if (response[0] != (byte)0x00){
-					throw new Exception("E_RESPONSE_CODE - " + response[0]);
-				}
-			} catch (IOException e) {
-				if (e.getMessage().equals("Tag was lost.")) {
-					// Continue, because of Tag bug
-				} else {
-					throw e;
-				}
-			} finally {
-				try {
-					nfcv.close();
-				} catch (IOException e) {}
-			}
-		}
-
-		return response;
+        return this.transceiveNfcV(request);
 	}
 
 	private void setupForegroundDispatch(Activity activity) {
@@ -219,11 +208,11 @@ public class NfcVHandler {
         return this.activity.getIntent();
     }
 
-    private byte getBlockAddrCode(byte[] blockAddr) throws Exception {
+    private byte getRequestFlags(byte[] blockAddr) throws Exception {
     	if (blockAddr.length == 1) {
-    		return (byte)0x02;
+    		return FLAGS_DATA_RATE;
     	} else if (blockAddr.length == 2) {
-    		return (byte)0x0A;
+    		return FLAGS_DATA_RATE_AND_PROTOCOL_EXT;
     	} else {
     		throw new Exception(E_ADDR_TOO_LONG);
     	}

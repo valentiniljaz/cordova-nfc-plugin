@@ -20,6 +20,7 @@ public class NfcVPlugin extends CordovaPlugin {
     private static final String FUNC_CHECK_NFCV_AVAILABILITY = "checkNfcVAvailability";
     private static final String FUNC_START_LISTENING = "startListening";
     private static final String FUNC_STOP_LISTENING = "stopListening";
+    private static final String FUNC_TRANSCEIVE = "transceive";
     private static final String FUNC_READ_BLOCK = "readBlock";
     private static final String FUNC_WRITE_BLOCK = "writeBlock";
     
@@ -56,6 +57,9 @@ public class NfcVPlugin extends CordovaPlugin {
                 } 
                 else if (action.equalsIgnoreCase(FUNC_STOP_LISTENING)) {
                     this.handler.stopListening();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_TRANSCEIVE)) {
+                    this.handler.transceive(args.getJSONObject(0));
                 } 
                 else if (action.equalsIgnoreCase(FUNC_READ_BLOCK)) {
                     this.handler.readBlock(args.getJSONObject(0));

@@ -36,12 +36,19 @@ It disables foreground dispatch. Intent are no longer received.
 * success - It returns "NFC_STOP"
 * error - Check error flags below
 
+####`NfcV.transceive: function (request, success, error));`
+
+It is used to dispatch any kind of request against a NFC tag. Request object has to include a full request: flags, block_addr and any data.
+
+* success - It returns response from the request. If it is a read request it returns the read data. If it is a write request it returns write response.
+* error - Check error flags below
+
 
 ####`NfcV.readBlock: function (blockAddr, success, error));`
 
 Reads one block from `blockAddr`.
 
-* success - It returns bytes read from block at `blockAddr`
+* success - It returns bytes read from block at `blockAddr` along with response flags
 * error - Check error flags below
 
 
@@ -49,7 +56,7 @@ Reads one block from `blockAddr`.
 
 Writes `blockData` into one block at `blockAddr`.
 
-* success - It returns bytes from write response
+* success - It returns bytes from write response (error flag and any error code)
 * error - Check error flags below
 
 
@@ -59,3 +66,7 @@ Writes `blockData` into one block at `blockAddr`.
 * `E_NFC_DISABLED` - NFC is not enabled
 * `E_NULL_TAG` - Tag returned NULL
 * `E_ADDR_TOO_LONG` - Block addr is too long (more than 2 bytes)
+
+####Datasheet
+
+Refer to attached datasheet for futher clarifications (chapters: 19, 20, 26).

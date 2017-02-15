@@ -12,6 +12,9 @@ var NfcV = {
     stopListening: function(success, error) {
         cordova.exec(success, error, "NfcVPlugin", "stopListening", []);
     },
+    transceive: function(request, success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "transceive", [request]);
+    },
     readBlock: function(blockAddr, success, error) {
         cordova.exec(success, error, "NfcVPlugin", "readBlock", [blockAddr]);
     },
