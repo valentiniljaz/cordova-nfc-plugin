@@ -89,7 +89,7 @@ Refer to attached datasheet for futher clarifications (chapters: 19, 20, 26).
 
 #### AndroidManifest.xml
 
-Add the following ìntent filters inside `activity`:
+Add the following intent filters inside `activity`:
 
 ```
 <intent-filter>
