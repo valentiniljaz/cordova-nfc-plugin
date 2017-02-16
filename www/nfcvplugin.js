@@ -1,10 +1,13 @@
-cordova.define("nfc.plugin.NfcVPlugin.nfc", function(require, exports, module) {
+cordova.define("nfc.plugin.NfcVPlugin.NfcV", function(require, exports, module) {
 var NfcV = {
     init: function(success, error) {
         cordova.exec(success, error, "NfcVPlugin", "init", []);
     },
     checkNfcVAvailability: function(success, error) {
         cordova.exec(success, error, "NfcVPlugin", "checkNfcVAvailability", []);
+    },
+    addNdefListener: function(success, error) {
+        cordova.exec(success, error, "NfcVPlugin", "addNdefListener", []);
     },
     startListening: function(success, error) {
         cordova.exec(success, error, "NfcVPlugin", "startListening", []);

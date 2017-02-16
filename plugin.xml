@@ -14,14 +14,22 @@
  
     <!-- android -->
     <platform name="android">
+        
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="NfcVPlugin">
                 <param name="android-package" value="nfc.plugin.NfcVPlugin"/>
 				<param name="onload" value="true" />
             </feature>
+            <preference name="AndroidLaunchMode" value="singleTask"/>
         </config-file>
  
         <source-file src="src/android/NfcVPlugin.java" target-dir="src/nfc/plugin" />      
-		<source-file src="src/android/NfcVHandler.java" target-dir="src/nfc/plugin" />   
+		<source-file src="src/android/NfcVHandler.java" target-dir="src/nfc/plugin" />
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.NFC"/>
+            <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+        </config-file>
+
      </platform>          
 </plugin>

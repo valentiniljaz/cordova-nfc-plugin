@@ -13,11 +13,13 @@ import org.json.JSONObject;
 import nfc.plugin.NfcVHandler;
 import android.app.Activity;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 
 public class NfcVPlugin extends CordovaPlugin {
 
     private static final String FUNC_INIT = "init";
     private static final String FUNC_CHECK_NFCV_AVAILABILITY = "checkNfcVAvailability";
+    private static final String FUNC_ADD_NDEF_LISTENER = "addNdefListener";
     private static final String FUNC_START_LISTENING = "startListening";
     private static final String FUNC_STOP_LISTENING = "stopListening";
     private static final String FUNC_TRANSCEIVE = "transceive";
@@ -26,12 +28,11 @@ public class NfcVPlugin extends CordovaPlugin {
     
     private boolean pluginInit = false;
     private NfcVHandler handler;
-    private Activity activity;
+    private String jsEventPending = "";
 
     private void initPlugin() {
         if (!this.pluginInit) {
-            this.activity = this.cordova.getActivity();
-            this.handler = new NfcVHandler(this.activity);
+            this.handler = new NfcVHandler(this.cordova.getActivity(), this.webView);
             this.pluginInit = true;
         }
     }
@@ -51,6 +52,12 @@ public class NfcVPlugin extends CordovaPlugin {
                 } 
                 else if (action.equalsIgnoreCase(FUNC_CHECK_NFCV_AVAILABILITY)) {
                     this.handler.checkNfcVAvailibility();
+                } 
+                else if (action.equalsIgnoreCase(FUNC_ADD_NDEF_LISTENER)) {
+                    if (this.jsEventPending.length() > 0) {
+                        this.webView.sendJavascript(this.jsEventPending);
+                    }
+                    callbackContext.success("NDEF_LISTENER_ADDED");
                 } 
                 else if (action.equalsIgnoreCase(FUNC_START_LISTENING)) {
                     this.handler.startListening();
@@ -83,9 +90,37 @@ public class NfcVPlugin extends CordovaPlugin {
 
         return result;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = this.cordova.getActivity().getIntent();
+        System.out.println("On start " + intent.getAction());
+        this.jsEventPending = NfcVHandler.startIntent(intent);
+    }
     
     @Override
     public void onNewIntent(Intent intent) {
-        this.handler.newIntent(intent);
+        super.onNewIntent(intent);
+        System.out.println("New intent");
+        if (this.pluginInit) {
+            this.handler.newIntent(intent);
+        }
+    }
+
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+        if (this.pluginInit) {
+            this.handler.stopForegroundDispatch();
+        }
+    }
+
+    @Override
+    public void onResume(boolean multitasking) {
+        super.onResume(multitasking);
+        if (this.pluginInit) {
+            this.handler.startForegroundDispatch();
+        }
     }
 }

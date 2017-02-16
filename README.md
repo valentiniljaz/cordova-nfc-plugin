@@ -20,13 +20,30 @@ Check if Nfc hardware available
 * success - Function returns "NFC_CHECK_OK"
 * error - Check error flags below
 
+####`NfcV.addNdefListner: function (success, error));`
+
+Get notified when ever new device is discovered. Ndef message is sent in event data.
+
+* success - When intent recieved it returns "NFC_INTENT_ACTIVE"
+* error - Check error flags below
+
 
 ####`NfcV.startListening: function (success, error));`
 
 Starts listening for new "ACTION_TECH_DISCOVERED" intent.
 
-* success - When intent recieved it returns "NFC_INTENT_ACTIVE"
+* success - When intent recieved it returns "NDEF_LISTENER_ADDED"
 * error - Check error flags below
+
+You need to add `document.addEventListener` to be notified when a new device is discovered.
+
+```
+document.addEventListener('NdefTag', (event) => {
+    console.log('Event', event);
+}, true);
+
+NfcV.addNdefListener();
+```
 
 
 ####`NfcV.stopListening: function (success, error));`
@@ -70,3 +87,30 @@ Writes `blockData` into one block at `blockAddr`.
 ####Datasheet
 
 Refer to attached datasheet for futher clarifications (chapters: 19, 20, 26).
+
+#### AndroidManifest.xml
+
+Add the following ìntent filters inside `activity`:
+
+```
+<intent-filter>
+    <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <data android:mimeType="text/plain" />
+</intent-filter>
+<intent-filter>
+    <action android:name="android.nfc.action.TECH_DISCOVERED" />
+</intent-filter>
+<meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />
+```
+###nfc_tech_filter
+
+Create new file within `platforms/android/res/xml/nfc_tech_filter.xml`:
+
+```
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <tech-list>
+        <tech>android.nfc.tech.NfcV</tech>
+    </tech-list>
+</resources>
+```
