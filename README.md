@@ -24,26 +24,25 @@ Check if Nfc hardware available
 
 Get notified when ever new device is discovered. Ndef message is sent in event data.
 
-* success - When intent recieved it returns "NFC_INTENT_ACTIVE"
-* error - Check error flags below
-
-
-####`NfcV.startListening: function (success, error));`
-
-Starts listening for new "ACTION_TECH_DISCOVERED" intent.
-
-* success - When intent recieved it returns "NDEF_LISTENER_ADDED"
+* success - If listener added it returns "NDEF_LISTENER_ADDED"
 * error - Check error flags below
 
 You need to add `document.addEventListener` to be notified when a new device is discovered.
 
 ```
 document.addEventListener('NdefTag', (event) => {
-    console.log('Event', event);
+    console.log('Ndef', JSON.parse(event.ndef));
 }, true);
 
 NfcV.addNdefListener();
 ```
+
+####`NfcV.startListening: function (success, error));`
+
+Starts listening for new "ACTION_TECH_DISCOVERED" intent.
+
+* success - When intent recieved it returns "NFC_INTENT_ACTIVE"
+* error - Check error flags below
 
 
 ####`NfcV.stopListening: function (success, error));`
