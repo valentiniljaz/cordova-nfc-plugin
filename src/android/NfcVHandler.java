@@ -42,6 +42,8 @@ public class NfcVHandler {
     private static final byte CMD_WRITE = (byte)0x21;
     private static final byte FLAGS_DATA_RATE = (byte)0x02;
     private static final byte FLAGS_DATA_RATE_AND_PROTOCOL_EXT = (byte)0x0A;
+    private static final byte NUM_BLOCK_NDEF = 9;
+    private static final byte NUM_BYTES_BLOCK = 4;
 
     private NfcAdapter nfcAdapter;
     private Activity activity;
@@ -288,12 +290,12 @@ public class NfcVHandler {
     }
 
     private static byte[] getNdefPayloadFromNfcv(Intent intent) throws Exception {
-        int payloadLen = 9 * 4;
+        int payloadLen = NUM_BLOCK_NDEF * NUM_BYTES_BLOCK;
         byte[] payload = new byte[payloadLen];
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < NUM_BLOCK_NDEF; i++) {
             byte[] block = NfcVHandler.readNfcVBlock(intent, new byte[]{ (byte)i });
             for (int j = 1; j < block.length; j++) {
-                payload[(i * 4) + (j -1)] = (byte)block[j];
+                payload[(i * NUM_BYTES_BLOCK) + (j -1)] = (byte)block[j];
             }
         }
         return payload;
