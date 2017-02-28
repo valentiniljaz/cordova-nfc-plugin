@@ -95,14 +95,12 @@ public class NfcVPlugin extends CordovaPlugin {
     public void onStart() {
         super.onStart();
         Intent intent = this.cordova.getActivity().getIntent();
-        System.out.println("On start " + intent.getAction());
         this.jsEventPending = NfcVHandler.startIntent(intent);
     }
     
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        System.out.println("New intent");
         if (this.pluginInit) {
             this.handler.newIntent(intent);
         }

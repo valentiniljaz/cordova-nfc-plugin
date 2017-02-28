@@ -339,26 +339,21 @@ public class NfcVHandler {
         return new String(hexChars);
     }
 
-    private byte[] argToBytes(JSONObject blockAddr) {
+    private byte[] argToBytes(JSONObject bytes) {
         byte[] readBlock = new byte[1];
 
-        List<Byte> argsBytes = new ArrayList<Byte>();
         Iterator<String> keys;
         String key;
-        Byte[] readBytes;
 
         try {
-            keys = blockAddr.keys();
+            readBlock = new byte[ bytes.length() ];
+
+            keys = bytes.keys();
             while ( keys.hasNext() ) {
                 key = (String)keys.next();
-                argsBytes.add((byte)blockAddr.getInt(key));
+                readBlock[ Integer.parseInt(key) ] = (byte)bytes.getInt(key);
             }
 
-            readBytes = argsBytes.toArray(new Byte[argsBytes.size()]);
-            readBlock = new byte[readBytes.length];
-            for(int i = 0; i < readBytes.length; i++) {
-                readBlock[i] = readBytes[i].byteValue();
-            }
         } catch (Exception e) {
             callbackContext.error(e.getMessage());
         }

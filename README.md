@@ -15,7 +15,7 @@ Initialize plugin
 
 ####`NfcV.checkNfcVAvailability: function (success, error));`
 
-Check if Nfc hardware available
+Check if Nfc hardware is available
 
 * success - Function returns "NFC_CHECK_OK"
 * error - Check error flags below
@@ -47,7 +47,7 @@ Starts listening for new "ACTION_TECH_DISCOVERED" intent.
 
 ####`NfcV.stopListening: function (success, error));`
 
-It disables foreground dispatch. Intent are no longer received.
+It disables foreground dispatch. Intents are no longer received.
 
 * success - It returns "NFC_STOP"
 * error - Check error flags below
