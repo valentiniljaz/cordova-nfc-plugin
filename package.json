@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/valentiniljaz/cordova-nfc-plugin#ionic2/readme",
   "scripts": {
+    "postinstall": "tsc --project ./ionic2",
     "prepublish": "tsc --project ./ionic2"
   },
   "dependencies": {
@@ -33,9 +34,7 @@
     "node": "0.0.0",
     "reflect-metadata": "^0.1.9",
     "rxjs": "^5.2.0",
-    "zone.js": "^0.7.7"
-  },
-  "devDependencies": {
+    "zone.js": "^0.7.7",
     "typescript": "^2.2.2"
   }
 }
