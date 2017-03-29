@@ -1,0 +1,20 @@
+{
+  "name": "cordova-nfc-plugin",
+  "version": "0.1.0",
+  "description": "Angular service for communicating with NfcV tags",
+  "main": "ionic2/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valentiniljaz/cordova-nfc-plugin.git"
+  },
+  "keywords": [
+    "nfc",
+    "nfcv"
+  ],
+  "author": "Valentin Iljaž <valentin.iljaz@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/valentiniljaz/cordova-nfc-plugin/issues"
+  },
+  "homepage": "https://github.com/valentiniljaz/cordova-nfc-plugin#ionic2/readme"
+}
