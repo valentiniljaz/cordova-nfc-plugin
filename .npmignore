@@ -12,5 +12,5 @@ Thumbs.db
 .DS_Store
 
 # Ignored files
-*.ts
-!*.d.ts
+#*.ts
+#!*.d.ts
