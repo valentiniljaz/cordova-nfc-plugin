@@ -8,8 +8,8 @@
     <license>MIT</license>
     <keywords>nfc, nfcv</keywords>
  
-    <js-module src="www/nfcvplugin.js" name="nfc">
-        <clobbers target="nfc" />
+    <js-module src="www/nfcvplugin.js" name="NfcV">
+        <clobbers target="NfcV" />
     </js-module>
  
     <!-- android -->

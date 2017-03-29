@@ -1,4 +1,3 @@
-cordova.define("nfc.plugin.NfcVPlugin.NfcV", function(require, exports, module) {
 var NfcV = {
     init: function(success, error) {
         cordova.exec(success, error, "NfcVPlugin", "init", []);
@@ -24,6 +23,5 @@ var NfcV = {
     writeBlock: function(blockAddr, blockData, success, error) {
         cordova.exec(success, error, "NfcVPlugin", "writeBlock", [blockAddr, blockData]);
     }
-}
+};
 module.exports = NfcV;
-});
