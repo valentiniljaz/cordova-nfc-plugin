@@ -113,3 +113,7 @@ Create new file within `platforms/android/res/xml/nfc_tech_filter.xml`:
     </tech-list>
 </resources>
 ```
+
+#### Angular service: NfcvService
+
+[More...](./ionic2/readme.md)

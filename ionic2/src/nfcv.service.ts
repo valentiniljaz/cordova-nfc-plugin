@@ -90,6 +90,8 @@ export class NfcvService {
         let record = [];
 
         // Ndef from Nfcv
+        // Refer to attached datasheet for futher clarifications (chapters: 19, 20, 26).
+        
         if (ndef.length == (9*4)) {
             let startIndx = 13;
             let endIndx = 13 + ndef[8] - 3;

@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/valentiniljaz/cordova-nfc-plugin/issues"
   },
-  "homepage": "https://github.com/valentiniljaz/cordova-nfc-plugin#ionic2/readme",
+  "homepage": "https://github.com/valentiniljaz/cordova-nfc-plugin#readme",
   "scripts": {
     "postinstall": "tsc --project ./ionic2",
     "prepublish": "tsc --project ./ionic2"
