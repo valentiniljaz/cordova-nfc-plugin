@@ -20,6 +20,75 @@ export class MyModule {}
 
 ```
 
+## Example
+
+app.component.ts
+```
+import {Component, OnInit} from '@angular/core';
+import { Platform } from 'ionic-angular';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { TabsPage } from '../pages/tabs/tabs';
+import { NfcvService } from 'cordova-nfc-plugin/ionic2';
+
+@Component({
+  templateUrl: 'app.html'
+})
+export class MyApp implements OnInit {
+  rootPage:any = TabsPage;
+  public tag;
+
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public nfcvService: NfcvService) {
+    platform.ready().then(() => {
+      // Okay, so the platform is ready and our plugins are available.
+      // Here you can do any higher level native things you might need.
+      statusBar.styleDefault();
+      splashScreen.hide();
+
+      nfcvService.addNdefListener();
+    });
+  }
+
+  ngOnInit() {
+    this.nfcvService.onTag().subscribe((tag) => {
+      //Avoid reading null tag on first call
+      if (tag) {
+        console.log('Found tag:', tag);
+        this.tag = tag;
+      }
+    });
+  }
+
+  read() {
+    var device = {"regexp": new RegExp('^AIR\-SAVER v[0-9\.]+$', 'i')};
+    this.nfcvService.
+    read([
+      { block: new Uint8Array([0x18]) },
+      { block: new Uint8Array([0x19]) }
+    ], true, device)
+        .then((data) => {
+          console.log(data);
+        });
+  }
+}
+```
+app.html
+```
+<ion-nav [root]="rootPage"></ion-nav>
+<div *ngIf="tag">
+    Tag: {{tag}}
+    <button ion-button (tap)="read()">READ</button>
+</div>
+```
+
+1) In constructor I setup NdefListener and within `ngOnInit` I subscribe to Ndef messages.
+2) Once a Nfc intent is received (phone will beep) its Ndef message is sent over to `onTag`.
+3) In `onTag` I set the property `tag` to the current read tag which is then displayed in view.
+3) View has a button which calls `read` method when tapped.
+4) `NfcvService.read` method waits for another Nfc intent (phone will beep again). Once an intent is received it reads data from specified addresses and returns read data. You will notice that when this intent is received `onTag` will also receive new event (but the same tag).
+
+The idea for NdefListener is to just handle Ndef messages and nothing else. Once a tag is received within `onTag` you display specific options for the received tag. Then the user chooses an option which will be executed against that tag. Ndef listener is separated from read/write operations. With NdefListener you receive an event each time a tag's Ndef message is read, and that's it. If you want to read from that device, Android has to dispatch new intent.
+
 ## NfcvService.addNdefListener
 
 In order to get notified whenever a new tag is discovered you need to setup two things:
@@ -94,6 +163,8 @@ this.nfcvService.read([
 ```
 var device = {"regexp": new RegExp('<regula-exp>', 'i')};
 ```
+
+Replace `<regula-exp>` with your regular expression. For example: `^AIR\-SAVER v[0-9\.]+$`.
 
 ## NfcvService.write
 
