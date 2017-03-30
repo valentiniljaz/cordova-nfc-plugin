@@ -1,4 +1,4 @@
-# Angular NfcV Service
+# Ionic2 NfcV Service
 
 Service provides helpers methods for accessing NfcV tags on Android
 
