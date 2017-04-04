@@ -1,6 +1,14 @@
+#  !!! OBSOLETE !!!
+
+Repository was moved to: (https://github.com/valentiniljaz/cordova-nfcv-plugin)
+
+
+
+
+
 # cordova-nfc-plugin
 
-Plugin can read and write data of Nfc tags using NfcV protocol ().
+Plugin can read and write data of Nfc tags using NfcV protocol.
 
 Configuration:
 ----------------------------------------------------
