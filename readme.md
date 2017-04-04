@@ -2,12 +2,28 @@
 
 Plugin reads and writes data of NfcV tags.
 
+Configuration:
+----------------------------------------------------
+Plugin configuration is done by changing values in NfcVHandler class (`src/android/NfcVHandler.java`).
+
+Some NFC tags might not support NDEF:
+
+* READ_NDEF: Prevent reading NDEF if tag does not support it
+* NDEF_BLOCK_ADDR: Address of the first block that contains NDEF message encoded with TLV (T = type; L = length; V = value)
+
+The following values should be the same for any tag. If not, you should change to the appropriate values:
+
+* CMD_READ: Code for read command (default: 0x20).
+* CMD_WRITE: Code for write command (default: 0x21).
+* CMD_FLAGS: Each request specifies some flags (default: 0x02 - High data rate). See attached datasheet for more info.
+
+
 Usage:
 ----------------------------------------------------
 
 #### `NfcV.init: function (success, error));`
 
-Initialize plugin
+Initialize plugin. In most cases not even required, since every request also initializes the adapter.
 
 * success - Function returns "NFC_INIT_OK"
 * error - Check error flags below
@@ -15,7 +31,7 @@ Initialize plugin
 
 #### `NfcV.checkNfcVAvailability: function (success, error));`
 
-Check if Nfc hardware is available
+Check if Nfc hardware is available.
 
 * success - Function returns "NFC_CHECK_OK"
 * error - Check error flags below

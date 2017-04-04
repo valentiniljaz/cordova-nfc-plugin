@@ -38,12 +38,15 @@ public class NfcVHandler {
     private static final String E_ADDR_TOO_LONG = "E_ADDR_TOO_LONG";
     private static final String E_NFC_INTENT_UNKNOWN = "E_NFC_INTENT_UNKNOWN";
 
+    // If tag does not support NDEF, then prevent reading NDEF
+    private static final boolean READ_NDEF = true;
+    // Address of the first block that contains NDEF message encoded with TLV (T = type; L = length; V = value)
+    private static final int NDEF_BLOCK_ADDR = 1;
+
+    // Tags may have different values
     private static final byte CMD_READ = (byte)0x20;
     private static final byte CMD_WRITE = (byte)0x21;
-    private static final byte FLAGS_DATA_RATE = (byte)0x02;
-    private static final byte FLAGS_DATA_RATE_AND_PROTOCOL_EXT = (byte)0x0A;
-    private static final byte NUM_BLOCK_NDEF = 9;
-    private static final byte NUM_BYTES_BLOCK = 4;
+    private static final byte CMD_FLAGS = (byte)0x02;
 
     private NfcAdapter nfcAdapter;
     private Activity activity;
@@ -290,15 +293,57 @@ public class NfcVHandler {
     }
 
     private static byte[] getNdefPayloadFromNfcv(Intent intent) throws Exception {
-        int payloadLen = NUM_BLOCK_NDEF * NUM_BYTES_BLOCK;
-        byte[] payload = new byte[payloadLen];
-        for (int i = 0; i < NUM_BLOCK_NDEF; i++) {
-            byte[] block = NfcVHandler.readNfcVBlock(intent, new byte[]{ (byte)i });
-            for (int j = 1; j < block.length; j++) {
-                payload[(i * NUM_BYTES_BLOCK) + (j -1)] = (byte)block[j];
+        if (READ_NDEF) {
+            // Ndef is stored in TLV format (T = type; L = length; V = value)
+
+            byte[] firstBlock = NfcVHandler.readNfcVBlock(intent, new byte[]{ (byte)NDEF_BLOCK_ADDR });
+            // Response code [0] must be 0x00
+            // For Ndef: T [1] must be 0x03
+
+            if ((byte)firstBlock[0] == 0x00 && (byte)firstBlock[1] == 0x03) {
+                int payloadLength = (int)firstBlock[2];
+                int payloadIndx = 0;
+                byte[] payload = new byte[payloadLength];
+
+                // First byte defines response flags, so we must skip it
+                int blockLen = (firstBlock.length - 1);
+                int firstBytes = ((payloadLength < blockLen) ? payloadLength : blockLen);
+                // Start from second byte assuming we skipped first byte
+                for (int i = 2; i < firstBytes; i++) {
+                    payload[payloadIndx] = firstBlock[i + 1];
+                    payloadIndx++;
+                    payloadLength--;
+                }
+
+                int ndefBlockIndx = 0;
+                byte[] block;
+                int bytesLen;
+                while(payloadLength > 0) {
+                    ndefBlockIndx++;
+                    block = NfcVHandler.readNfcVBlock(intent, new byte[]{ (byte)(NDEF_BLOCK_ADDR + ndefBlockIndx) });
+                    if ((byte)block[0] == 0x00) {
+                        // First byte defines response flags, so we must skip it
+                        blockLen = (block.length - 1);
+                        bytesLen = ((payloadLength < blockLen) ? payloadLength : blockLen);
+                        for (int i = 0; i < bytesLen; i++) {
+                            payload[payloadIndx] = block[i + 1];
+                            payloadIndx++;
+                            payloadLength--;
+                        }
+                    } else {
+                        // Error reading
+                        return new byte[1];
+                    }
+                }
+
+                return payload;
+            } else {
+                // It's not NDEF
+                return new byte[1];
             }
+        } else {
+            return new byte[1];
         }
-        return payload;
     }
 
     private static String getJsEventTemplate(byte[] ndef) {
@@ -308,13 +353,10 @@ public class NfcVHandler {
     }
 
     private static byte getRequestFlags(byte[] blockAddr) throws Exception {
-        if (blockAddr.length == 1) {
-            return FLAGS_DATA_RATE;
-        } else if (blockAddr.length == 2) {
-            return FLAGS_DATA_RATE_AND_PROTOCOL_EXT;
-        } else {
+        if (blockAddr.length > 1) {
             throw new Exception(E_ADDR_TOO_LONG);
         }
+        return CMD_FLAGS;
     }
 
     private static JSONArray byteArrayToJSON(byte[] bytes) {

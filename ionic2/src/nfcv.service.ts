@@ -1,9 +1,20 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/Rx';
+
 declare var NfcV: any;
+declare var require: {
+    <T>(path: string): T;
+    (paths: string[], callback: (...modules: any[]) => void): void;
+    ensure: (paths: string[], callback: (require: <T>(path: string) => T) => void) => void;
+};
 
 @Injectable()
 export class NfcvService {
+
+    private commands = {
+        "getSystemInfo": [0x00, 0x2B]
+    };
+    private ndefRecordWithDeviceName = 0;
 
     private tagSubject: BehaviorSubject<any>;
 
@@ -28,6 +39,31 @@ export class NfcvService {
             }, (error) => {
                 reject(error);
             });
+        });
+    }
+
+    getSystemInfo(startListen?) {
+        console.log('** SYSTEM INFO START **');
+        return new Promise((mainResolve, mainReject) => {
+            this.startListening(startListen)
+                .then(() => {
+                    NfcV.transceive(new Uint8Array(this.commands.getSystemInfo),
+                        (systemInfoData) => {
+                            let systemInfoBytes = new Uint8Array(systemInfoData);
+                            console.log('** SYSTEM INFO END **', systemInfoBytes);
+                            if (systemInfoBytes[0] !== 0) {
+                                mainReject('E_SYSTEM_INFO_FAILED | CODE: ' + systemInfoBytes[1]);
+                            } else {
+                                mainResolve(this.Uint8ArraySplice(systemInfoBytes, 0, 1));
+                            }
+                        },
+                        (error) => {
+                            mainReject(error);
+                        });
+                })
+                .catch((error) => {
+                    mainReject(error);
+                });
         });
     }
 
@@ -87,36 +123,25 @@ export class NfcvService {
     }
 
     parseNdef(ndef) {
-        let record = [];
-
-        // Ndef from Nfcv
-        // Refer to attached datasheet for futher clarifications (chapters: 19, 20, 26).
-        
-        if (ndef.length == (9*4)) {
-            let startIndx = 13;
-            let endIndx = 13 + ndef[8] - 3;
-            for (let i = startIndx; i < endIndx; i++) {
-                record.push(ndef[i]);
-            }
-        // Ndef from intent
-        } else {
-            if (ndef.length > 3) {
-                let startIndx = -1;
-                for (let i = 0; i < ndef.length; i++) {
-                    if (ndef[i] == 2 && ndef[i + 1] == 101 && ndef[i + 2] == 110) {
-                        startIndx = i + 3;
-                        break;
-                    }
-                }
-                if (startIndx >= 0) {
-                    for (let i = startIndx; i < ndef.length; i++) {
-                        record.push(ndef[i]);
-                    }
-                }
-            }
+        if (ndef.length < 1) {
+            return 'UNDEFINED_NDEF';
         }
 
-        return this.bytesToString(record);
+        let ndefParser = <any>require('@taptrack/ndef');
+        let message;
+        try {
+            message = ndefParser.Message.fromBytes(ndef);
+        } catch(e) {
+            return 'NDEF_PARSE_ERROR';
+        }
+
+        let records = message.getRecords();
+        if (records.length > this.ndefRecordWithDeviceName) {
+            let recordContents = ndefParser.Utils.resolveTextRecord(records[this.ndefRecordWithDeviceName]);
+            return recordContents.content;
+        } else {
+            return 'NDEF_PARSE_ERROR';
+        }
     }
 
     read(blocks: any[], startListen?, device?): Promise<any> {
@@ -252,6 +277,25 @@ export class NfcvService {
                     mainReject(error);
                 });
         });
+    }
+    
+    readRange(startBlock, endBlock, startListen?, device?) {
+        let blocks = [];
+        for(let i = startBlock; i <= endBlock; i++) {
+            blocks.push({
+                block: new Uint8Array([i])
+            });
+        }
+        return this.read(blocks, startListen, device)
+            .then((readData) => {
+                let allData = [];
+                readData.forEach((item) => {
+                    for(let i = 0; i < item.data.length; i++) {
+                        allData.push(item.data[i]);
+                    }
+                });
+                return new Uint8Array(allData);
+            });
     }
 
     Uint8ArraySplice(arr, starting, deleteCount, elements?) {
