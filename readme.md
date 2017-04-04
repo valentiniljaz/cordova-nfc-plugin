@@ -9,13 +9,13 @@ Plugin configuration is done by changing values in NfcVHandler class (`src/andro
 Some NFC tags might not support NDEF:
 
 * READ_NDEF: Prevent reading NDEF if tag does not support it.
-* NDEF_BLOCK_ADDR: Address of the first block that contains NDEF message encoded with TLV (T = type; L = length; V = value). See attached datasheet 02 (chapter 3) for more info.
+* NDEF_BLOCK_ADDR: Address of the first block that contains NDEF message encoded with TLV (T = type; L = length; V = value). See attached datasheet 02 (chapters: 3.2 and 4.1) for more info.
 
 The following values should be the same for any tag. If not, you should change to the appropriate values:
 
 * CMD_READ: Code for read command (default: 0x20).
 * CMD_WRITE: Code for write command (default: 0x21).
-* CMD_FLAGS: Each request specifies some flags (default: 0x02 - High data rate). See attached datasheet 01 (chapter 19.1) for more info.
+* CMD_FLAGS: Each request specifies some flags (default: 0x02 - High data rate). See attached datasheet 01 (chapter: 19.1) for more info.
 
 
 Usage:
@@ -104,7 +104,7 @@ Writes `blockData` into one block at `blockAddr`.
 * Datasheet 01: Specs for M24LR04E-R (01__Specs__M24LR04E-R)
 	- chapters: 19, 20, 26
 * Datasheet 02: Using M24LR04E-R (02__Using__M24LR04E-R)
-	- chapters: 3
+	- chapters: 3, 4
 
 #### AndroidManifest.xml
 
