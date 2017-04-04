@@ -1,4 +1,4 @@
-#  !!! OBSOLETE !!!
+#  !!! DEPRECATED !!!
 
 Repository was moved to: (https://github.com/valentiniljaz/cordova-nfcv-plugin)
 
